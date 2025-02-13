@@ -18,6 +18,13 @@ import CodeEditor from 'bin-code-editor';
 
 Vue.use(CodeEditor);
 
+/**
+ * 注册 v-dom-resize 指令
+ * */
+import installDomResizeDirective from 'src/assets/js/installDomResizeDirective';
+
+installDomResizeDirective(Vue);
+
 window.vm = new Vue({
   render: h => h(App),
 }).$mount('#app');

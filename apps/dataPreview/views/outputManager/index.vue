@@ -5,8 +5,8 @@
         <el-button type="primary" @click="onClearFilter">清除所有过滤器</el-button>
       </div>
     </el-card>
-    <el-card class="content">
-      <el-table ref="table" :data="dataSource" highlight-current-row height="550px">
+    <el-card v-dom-resize="onResize" class="content">
+      <el-table ref="table" :data="dataSource" highlight-current-row :height="tableHeight">
         <el-table-column type="index" width="50" />
         <el-table-column
           v-for="(item, i) in tableColumns"
@@ -39,18 +39,21 @@ export default {
     return {
       dataSource: [],
       curRow: {},
+      tableHeight: '550px',
     };
   },
   computed: {
     urlFilters() {
       const urlSet = new Set();
+      const httpReg = new RegExp('^https?:');
+      const queryReg = new RegExp('\\?.*$');
+
       this.dataSource.forEach(item => {
         const { Url = '' } = item;
-        const pathList = Url.split('?');
-        if (pathList.length > 1) {
-          pathList.pop();
-        }
-        const saveUrl = pathList.join('?');
+
+        let saveUrl = Url.replace(queryReg, '');
+        saveUrl = saveUrl.replace(httpReg, '');
+
         if (saveUrl && !urlSet.has(saveUrl)) {
           urlSet.add(saveUrl);
         }
@@ -90,6 +93,17 @@ export default {
     },
     onDialogClose() {
       this.curRow = {};
+    },
+    onResize(entry) {
+      if (!entry?.target) {
+        return;
+      }
+
+      const { height } = entry.target.getBoundingClientRect();
+      const offset = 40;
+      const minHeight = 200;
+      const tableHeight = Math.max(minHeight, height - offset);
+      this.tableHeight = `${tableHeight}px`;
     },
   },
 };
