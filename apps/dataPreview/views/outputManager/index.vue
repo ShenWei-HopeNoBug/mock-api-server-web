@@ -3,11 +3,6 @@
     <el-card class="header">
       <div class="btn-group">
         <el-button type="primary" @click="onClearFilter">清除所有过滤器</el-button>
-        <UploadModel v-if="!isHttpProtocol" accept=".json" @upload="onUpload">
-          <template #content>
-            <el-button type="primary">选择本地抓包数据</el-button>
-          </template>
-        </UploadModel>
       </div>
     </el-card>
     <el-card class="content">
@@ -35,7 +30,6 @@
 import { cloneDeep } from 'lodash';
 import DetailDialog from './components/DetailDialog.vue';
 import UploadModel from 'src/components/UploadModel/index.vue';
-import { isJsonString } from 'src/assets/js/utils';
 import { tableColumns, filterMethod } from './config';
 
 export default {
@@ -45,7 +39,6 @@ export default {
     return {
       dataSource: [],
       curRow: {},
-      isHttpProtocol: true,
     };
   },
   computed: {
@@ -85,7 +78,6 @@ export default {
     },
   },
   created() {
-    this.isHttpProtocol = window.location.protocol.startsWith('http');
     this.dataSource = Array.isArray(window.MITMPROXY_OUTPUT) ? window.MITMPROXY_OUTPUT : [];
   },
   methods: {
@@ -98,20 +90,6 @@ export default {
     },
     onDialogClose() {
       this.curRow = {};
-    },
-    onUpload(file) {
-      if (!file) {
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const content = e.target.result;
-        const dataSource = isJsonString(content) ? JSON.parse(content) : [];
-        this.dataSource = Array.isArray(dataSource) ? dataSource : [];
-      };
-
-      reader.readAsText(file);
     },
   },
 };
