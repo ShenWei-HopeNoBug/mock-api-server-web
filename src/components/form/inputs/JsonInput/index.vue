@@ -121,7 +121,7 @@ export default {
 </style>
 
 <style scoped lang="less">
-.container {
+.jsonInput {
   width: 100%;
 }
 

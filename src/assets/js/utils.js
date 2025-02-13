@@ -14,3 +14,13 @@ export const limitNumRange = (num, min, max) => {
 
   return numCp;
 };
+
+// 是否为 Json 字符串
+export const isJsonString = (str = '') => {
+  try {
+    JSON.parse(str);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};

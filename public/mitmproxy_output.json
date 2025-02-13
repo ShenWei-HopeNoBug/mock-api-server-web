@@ -1,0 +1,8 @@
+[
+  {
+    "Url": "https:\/\/www.baidu.com",
+    "Method": "POST",
+    "Params": "{\"current_id\":\"18ad5fcc56af42bc98daed8a4852bc8f\"}",
+    "Response": "{\"status_code\":\"THS12140000000\",\"status_msg\":\"Success\",\"data\":{\"user_name\":\"shenwei3\",\"user_phone\":\"183****7305\",\"user_id\":\"666860252\",\"current_id\":\"18ad5fcc56af42bc98daed8a4852bc8f\",\"package_type\":\"FREE\",\"manage_team_id\":\"18ad5fcc56af42bc98daed8a4852bc8f\",\"team_list\":[{\"team_name\":\"test\",\"team_avatar\":\"https:\/\/o.thsi.cn\/ths-znkf-webui.aigc-model\/server\/aigc\/main\/1b4e0aff-9a0b-4da3-abfa-359f6f939e92.png\",\"team_id\":\"18ad5fcc56af42bc98daed8a4852bc8f\",\"role\":1,\"status\":2,\"package_type\":\"TEAM\",\"expire_time\":\"2024-11-04 14:11:48.0\"}],\"status\":0}}"
+  }
+]

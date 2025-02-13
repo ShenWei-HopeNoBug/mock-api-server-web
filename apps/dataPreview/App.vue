@@ -1,12 +1,15 @@
 <template>
   <div class="app">
-    APP
+    <outputManager />
   </div>
 </template>
 
 <script>
+import outputManager from './views/outputManager/index.vue';
+
 export default {
   name: 'App',
+  components: { outputManager },
 };
 </script>
 
