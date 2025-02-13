@@ -31,7 +31,6 @@
 import { cloneDeep } from 'lodash';
 import DetailDialog from './components/DetailDialog.vue';
 import { tableColumns } from './config';
-import { getMitmproxyOutputList } from 'apps/dataPreview/api';
 import UploadModel from 'src/components/UploadModel/index.vue';
 import { isJsonString } from 'src/assets/js/utils';
 
@@ -46,14 +45,10 @@ export default {
       isHttpProtocol: true,
     };
   },
-  mounted() {
+  created() {
     this.isHttpProtocol = window.location.protocol.startsWith('http');
-    // 页面部署在服务上，请求静态数据
-    if (this.isHttpProtocol) {
-      getMitmproxyOutputList().then(res => {
-        this.dataSource = Array.isArray(res) ? res : [];
-      });
-    }
+    const dataSource = isJsonString(window.MITMPROXY_OUTPUT) ? JSON.parse(window.MITMPROXY_OUTPUT) : [];
+    this.dataSource = Array.isArray(dataSource) ? dataSource : [];
   },
   methods: {
     onDetail(record = {}) {

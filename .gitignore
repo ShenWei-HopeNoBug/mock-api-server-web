@@ -1,6 +1,7 @@
 /node_modules
 /dist
 /html
+/web
 package-lock.json
 
 # Editor directories and files

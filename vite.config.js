@@ -31,7 +31,7 @@ export default defineConfig({
     rollupOptions: {
       input: `${ APPS }/dataPreview/index.html`,
       output: {
-        dir: 'dist',
+        dir: 'web',
         chunkFileNames: 'static/chunk/[name]-[hash].js',
         entryFileNames: 'static/entry/[name]-[hash].js',
         extend: ['ant-design-vue'],

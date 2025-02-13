@@ -1,0 +1,1 @@
+window.MITMPROXY_OUTPUT = '[]';
