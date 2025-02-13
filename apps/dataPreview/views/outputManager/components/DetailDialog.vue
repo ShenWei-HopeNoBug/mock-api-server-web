@@ -3,13 +3,13 @@
     title="抓包接口数据详情"
     :visible.sync="visible"
     top="5vh"
-    destroy-on-close
-    center
-    append-to-body
-    width="800px"
+    :destroy-on-close="true"
+    :center="true"
+    :append-to-body="true"
+    custom-class="__mitmproxy-preview_dialog__"
     @close="close"
   >
-    <div class="scroll">
+    <div v-if="visible" class="scroll">
       <div class="content">
         <div class="info-item" v-for="(item, i) in columns" :key="`info_${i}`">
           <div class="label">{{ item.label }}</div>
@@ -44,13 +44,13 @@ const columns = [
     label: 'Params',
     key: 'Params',
     type: 'jsonString',
-    codeEditorProps: { height: '300px' },
+    codeEditorProps: { height: '300px', readonly: true },
   },
   {
     label: 'Response',
     key: 'Response',
     type: 'jsonString',
-    codeEditorProps: { height: '600px' },
+    codeEditorProps: { height: '600px', readonly: true },
   },
 ];
 
@@ -84,7 +84,7 @@ export default {
 <style scoped lang="less">
 .scroll {
   width: 100%;
-  height: calc(90vh - 100px);
+  height: calc(100vh - 200px);
   overflow: hidden;
   overflow-y: auto;
 }
@@ -117,5 +117,12 @@ export default {
   padding: 14px;
   border-radius: 4px;
   border: 1px solid #ccc;
+}
+</style>
+
+<style lang="less">
+.__mitmproxy-preview_dialog__ {
+  margin-top: 0;
+  width: calc(100vw - 100px) !important;
 }
 </style>
