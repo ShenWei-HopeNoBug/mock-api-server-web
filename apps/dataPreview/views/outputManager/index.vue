@@ -49,9 +49,9 @@ export default {
       const queryReg = new RegExp('\\?.*$');
 
       this.dataSource.forEach(item => {
-        const { Url = '' } = item;
+        const { url = '' } = item;
 
-        let saveUrl = Url.replace(queryReg, '');
+        let saveUrl = url.replace(queryReg, '');
         saveUrl = saveUrl.replace(httpReg, '');
 
         if (saveUrl && !urlSet.has(saveUrl)) {
@@ -64,7 +64,7 @@ export default {
     tableColumns() {
       const columns = cloneDeep(tableColumns);
       return columns.map(item => {
-        if (item.key === 'Url') {
+        if (item.key === 'url') {
           return {
             ...item,
             props: {

@@ -1,3 +1,14 @@
+const typeFilters = [
+  {
+    text: 'MITMPROXY',
+    value: 'MITMPROXY',
+  },
+  {
+    text: 'USER',
+    value: 'USER',
+  },
+];
+
 const methodFilters = [
   {
     text: 'GET',
@@ -21,12 +32,21 @@ const filterMethod = (value, row, column) => {
 
 const tableColumns = [
   {
+    label: '数据来源',
+    key: 'type',
+    props: {
+      width: 120,
+      filters: typeFilters,
+      'filter-method': filterMethod,
+    },
+  },
+  {
     label: '请求Url',
-    key: 'Url',
+    key: 'url',
   },
   {
     label: '请求类型',
-    key: 'Method',
+    key: 'method',
     props: {
       width: 100,
       filters: methodFilters,
@@ -35,7 +55,7 @@ const tableColumns = [
   },
   {
     label: '请求参数',
-    key: 'Params',
+    key: 'params',
   },
 ];
 

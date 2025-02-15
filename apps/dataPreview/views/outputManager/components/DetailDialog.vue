@@ -32,23 +32,23 @@ import JsonInput from 'src/components/form/inputs/JsonInput/index.vue';
 const columns = [
   {
     label: 'Url',
-    key: 'Url',
+    key: 'url',
     type: 'text',
   },
   {
     label: 'Method',
-    key: 'Method',
+    key: 'method',
     type: 'text',
   },
   {
     label: 'Params',
-    key: 'Params',
+    key: 'params',
     type: 'jsonString',
     codeEditorProps: { height: '300px', readonly: true },
   },
   {
     label: 'Response',
-    key: 'Response',
+    key: 'response',
     type: 'jsonString',
     codeEditorProps: { height: '600px', readonly: true },
   },
