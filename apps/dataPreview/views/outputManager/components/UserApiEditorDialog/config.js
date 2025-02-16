@@ -59,12 +59,15 @@ const formConfig = {
 
     // get 请求把参数展开到链接上
     if (submitForm['method'] === 'GET') {
-      const url = submitForm['url'];
+      const url = submitForm['url'].trim();
       const pureUrl = url.split('?')[0];
       const params = JSON.parse(submitForm['params']);
+      const paramsObj = {};
       let query = '';
       Object.keys(params).forEach((key, i) => {
+        // 请求参数 value 强转为 string
         const value = String(params[key]);
+        paramsObj[key] = value;
         if (i === 0) {
           query += `?${key}=${value}`;
           return;
@@ -74,6 +77,7 @@ const formConfig = {
       });
 
       submitForm['url'] = pureUrl + query;
+      submitForm['params'] = JSON.stringify(paramsObj);
     }
 
     return submitForm;
