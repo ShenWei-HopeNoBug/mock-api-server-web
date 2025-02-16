@@ -24,3 +24,22 @@ export const isJsonString = (str = '') => {
     return false;
   }
 };
+
+/**
+ * 复制字符串文本
+ */
+export const copy = (text = '') => {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text);
+  } else {
+    const input = document.createElement('input');
+    input.setAttribute('value', text);
+    input.style.position = 'fixed';
+    input.style.clip = 'rect(0 0 0 0 )';
+    input.style.top = '50px';
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy', false);
+    document.body.removeChild(input);
+  }
+};

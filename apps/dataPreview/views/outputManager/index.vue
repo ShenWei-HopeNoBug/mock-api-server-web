@@ -2,6 +2,7 @@
   <div class="output-manager">
     <el-card class="header">
       <div class="btn-group">
+        <el-button type="primary" @click="onEditUserApi">用户接口编辑器</el-button>
         <el-button type="primary" @click="onClearFilter">清除所有过滤器</el-button>
       </div>
     </el-card>
@@ -22,19 +23,21 @@
         </el-table-column>
       </el-table>
     </el-card>
+    <UserApiEditorDialog ref="userApiEditorDialog" />
     <DetailDialog ref="detailDialog" :data-source="curRow" @close="onDialogClose" />
   </div>
 </template>
 
 <script>
 import { cloneDeep } from 'lodash';
-import DetailDialog from './components/DetailDialog.vue';
+import UserApiEditorDialog from './components/UserApiEditorDialog/index.vue';
+import DetailDialog from './components/DetailDialog/index.vue';
 import UploadModel from 'src/components/UploadModel/index.vue';
 import { tableColumns, filterMethod } from './config';
 
 export default {
   name: 'outputManager',
-  components: { DetailDialog, UploadModel },
+  components: { UserApiEditorDialog, DetailDialog, UploadModel },
   data() {
     return {
       dataSource: [],
@@ -84,6 +87,9 @@ export default {
     this.dataSource = Array.isArray(window.MITMPROXY_OUTPUT) ? window.MITMPROXY_OUTPUT : [];
   },
   methods: {
+    onEditUserApi() {
+      this.$refs.userApiEditorDialog?.show?.();
+    },
     onClearFilter() {
       this.$refs.table?.clearFilter?.();
     },

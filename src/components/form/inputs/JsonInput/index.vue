@@ -1,12 +1,20 @@
 <template>
   <span class="jsonInput">
-    <el-button
-      class="formatCodeButton"
-      v-bind="getBindAttrs('formatCodeButton', formatCodeButtonOptions.bindAttrs)"
-      @click="formatCode"
-    >
+    <div class="header">
+      <el-button
+        v-bind="getBindAttrs('formatCodeButton', formatCodeButtonOptions.bindAttrs)"
+        @click="formatCode"
+      >
       {{ getButtonText(formatCodeButtonOptions, '格式化') }}
     </el-button>
+    <el-button
+      v-if="copy"
+      v-bind="getBindAttrs('copyButtonOptions', copyButtonOptions.bindAttrs)"
+      @click="onCopy"
+    >
+      {{ getButtonText(copyButtonOptions, '复制') }}
+    </el-button>
+    </div>
     <div class="codeEditorContainer" :style="codeEditorContainerStyle">
       <b-code-editor
         v-model="value"
@@ -21,12 +29,13 @@
 <script>
 import { isObject } from 'lodash';
 import { defaultAttrsMap, defaultCodeEditorStyle } from './config';
+import { copy, isJsonString } from 'src/assets/js/utils';
 
 export default {
   name: 'JsonInput',
   model: {
     prop: 'inputValue',
-    event: 'change'
+    event: 'change',
   },
   props: {
     inputValue: {},
@@ -38,9 +47,21 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    copyButtonOptions: {
+      type: Object,
+      default: () => ({}),
+    },
     codeEditorStyle: {
       type: Object,
       default: () => ({}),
+    },
+    defaultCopyContent: {
+      type: String,
+      default: '',
+    },
+    copy: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -75,7 +96,7 @@ export default {
       },
       deep: true,
       immediate: true,
-    }
+    },
   },
   methods: {
     // 获取绑定的标签属性
@@ -104,16 +125,23 @@ export default {
     refresh() {
       this.$refs.codeEditor && this.$refs.codeEditor.refresh();
     },
+    onCopy() {
+      const content = isJsonString(this.value) ?
+        JSON.stringify(JSON.parse(this.value)) : this.defaultCopyContent;
+      copy(content);
+      this.$message.success('复制成功');
+    },
     onChange(val) {
       this.$emit('change', val);
     },
-  }
+  },
 };
 </script>
 
 <style lang="less">
 .jsonInput {
   /* 插件样式有点问题，设置代码编辑器的高度，内容区域不会自适应变化，这里手动处理下 */
+
   .CodeMirror {
     height: 100%;
   }
@@ -125,8 +153,10 @@ export default {
   width: 100%;
 }
 
-.formatCodeButton {
+.header {
   margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .codeEditorContainer {

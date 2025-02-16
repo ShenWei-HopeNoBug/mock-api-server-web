@@ -7,7 +7,12 @@ const defaultAttrsMap = {
   formatCodeButton: {
     type: 'primary',
     size: 'small',
-  }
+  },
+  // 复制按钮
+  copyButtonOptions: {
+    type: 'primary',
+    size: 'small',
+  },
 };
 
 // 代码编辑器默认样式

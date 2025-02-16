@@ -15,7 +15,12 @@
           <div class="label">{{ item.label }}</div>
           <div v-if="item.type === 'jsonString'" class="value">
             <div class="json-area">
-              <JsonInput :input-value="dataSource[item.key]" :code-editor-bind-attrs="item.codeEditorProps" />
+              <JsonInput
+                :input-value="dataSource[item.key]"
+                :code-editor-bind-attrs="item.codeEditorProps"
+                :copy="true"
+                default-copy-content="{}"
+              />
             </div>
           </div>
           <div v-else class="value">{{ dataSource[item.key] }}</div>
@@ -27,32 +32,7 @@
 
 <script>
 import JsonInput from 'src/components/form/inputs/JsonInput/index.vue';
-
-
-const columns = [
-  {
-    label: 'Url',
-    key: 'url',
-    type: 'text',
-  },
-  {
-    label: 'Method',
-    key: 'method',
-    type: 'text',
-  },
-  {
-    label: 'Params',
-    key: 'params',
-    type: 'jsonString',
-    codeEditorProps: { height: '300px', readonly: true },
-  },
-  {
-    label: 'Response',
-    key: 'response',
-    type: 'jsonString',
-    codeEditorProps: { height: '600px', readonly: true },
-  },
-];
+import { columns } from './config';
 
 export default {
   name: 'DetailDialog',
