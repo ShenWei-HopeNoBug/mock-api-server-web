@@ -7,6 +7,7 @@
     :center="true"
     :append-to-body="true"
     custom-class="__user-api_editor_dialog__"
+    @close="close"
   >
     <div v-if="visible" class="content">
       <div class="left">
@@ -78,6 +79,10 @@ export default {
     },
   },
   methods: {
+    initStates() {
+      this.dataJson = '{}';
+      this.previewHeight = '300px';
+    },
     onResize(entry) {
       if (!entry?.target) {
         return;
@@ -90,10 +95,12 @@ export default {
       this.previewHeight = `${previewHeight}px`;
     },
     show() {
+      this.initStates();
       this.visible = true;
     },
     close() {
       this.visible = false;
+      this.initStates();
       this.$emit('close');
     },
     onOutput() {
