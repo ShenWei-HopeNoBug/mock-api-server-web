@@ -64,7 +64,7 @@ export default {
 <style scoped lang="less">
 .scroll {
   width: 100%;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 214px);
   overflow: hidden;
   overflow-y: auto;
 }

@@ -1,3 +1,51 @@
+const searchFormColumns = [
+  {
+    label: '数据来源',
+    key: 'type',
+    inputType: 'selectInput',
+    valueEnum: [
+      {
+        text: 'MITMPROXY',
+        value: 'MITMPROXY',
+      },
+      {
+        text: 'USER',
+        value: 'USER',
+      },
+    ],
+  },
+  {
+    label: '请求Url',
+    key: 'url',
+    inputType: 'textInput',
+  },
+  {
+    label: '请求类型',
+    key: 'method',
+    inputType: 'selectInput',
+    valueEnum: [
+      {
+        label: 'GET',
+        value: 'GET',
+      },
+      {
+        label: 'POST',
+        value: 'POST',
+      },
+    ],
+  },
+  {
+    label: '请求参数',
+    key: 'params',
+    inputType: 'textInput',
+  },
+  {
+    label: '响应数据',
+    key: 'response',
+    inputType: 'textInput',
+  },
+];
+
 const typeFilters = [
   {
     text: 'MITMPROXY',
@@ -59,4 +107,4 @@ const tableColumns = [
   },
 ];
 
-export { tableColumns, filterMethod };
+export { searchFormColumns, tableColumns, filterMethod };
