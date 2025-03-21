@@ -8,8 +8,8 @@ import basicSsl from '@vitejs/plugin-basic-ssl';
 import proxy from './proxy';
 
 const ROOT = resolve(__dirname);
-const APPS = `${ ROOT }/apps`;
-const SRC = `${ ROOT }/src`;
+const APPS = `${ROOT}/apps`;
+const SRC = `${ROOT}/src`;
 
 export default defineConfig({
   base: './',
@@ -29,7 +29,7 @@ export default defineConfig({
       warnOnError: true,
     },
     rollupOptions: {
-      input: `${ APPS }/dataPreview/index.html`,
+      input: [`${APPS}/dataPreview/index.html`, `${APPS}/document/index.html`],
       output: {
         dir: 'web',
         chunkFileNames: 'static/chunk/[name]-[hash].js',
@@ -40,7 +40,7 @@ export default defineConfig({
           vue: ['vue'],
           elementUi: ['element-ui'],
         },
-      }
+      },
     },
   },
   plugins: [
@@ -57,12 +57,12 @@ export default defineConfig({
     alias: [
       {
         find: 'apps/',
-        replacement: `${ APPS }/`,
+        replacement: `${APPS}/`,
       },
       {
         find: 'src/',
-        replacement: `${ SRC }/`,
+        replacement: `${SRC}/`,
       },
     ],
   },
-})
+});
