@@ -15,9 +15,6 @@ import Menu from './Menu/index.vue';
 export default {
   name: 'Layout',
   components: { Menu },
-  data() {
-    return {};
-  },
 };
 </script>
 
