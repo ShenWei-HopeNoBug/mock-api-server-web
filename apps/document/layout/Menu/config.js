@@ -10,9 +10,14 @@ const menuList = generateMenus([
     title: '文档',
     children: [
       {
-        key: '/basic-usage',
-        title: '基本使用',
-        path: '/basic-usage',
+        key: '/select-work-dir',
+        title: '选择工作目录',
+        path: '/select-work-dir',
+      },
+      {
+        key: '/request-catch',
+        title: '抓取数据',
+        path: '/request-catch',
       },
     ],
   },

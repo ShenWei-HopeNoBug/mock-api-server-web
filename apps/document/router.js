@@ -12,9 +12,14 @@ const router = new Router({
       component: () => import('./views/introduction/index.vue'),
     },
     {
-      path: '/basic-usage',
-      name: 'basic-usage',
-      component: () => import('./views/document/basicUsage/index.vue'),
+      path: '/select-work-dir',
+      name: 'select-work-dir',
+      component: () => import('./views/document/selectWorkDir/index.vue'),
+    },
+    {
+      path: '/request-catch',
+      name: 'request-catch',
+      component: () => import('./views/document/requestCatch/index.vue'),
     },
   ],
 });
