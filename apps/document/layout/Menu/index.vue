@@ -1,5 +1,5 @@
 <template>
-  <el-menu mode="vertical" :default-active="defaultActiveMenuOption?.key" @select="onSelect">
+  <el-menu mode="vertical" :default-active="active" @select="onSelect">
     <template v-for="item in menuList">
       <el-submenu v-if="item.children?.length > 0" :index="item.key">
         <template #title>
@@ -21,6 +21,8 @@ import MenuItem from './MenuItem.vue';
 import { menuList, defaultActiveMenuOption } from './config';
 import { searchMenuOptions } from 'apps/document/layout/Menu/tools';
 
+const defaultActive = defaultActiveMenuOption?.key || '/';
+
 export default {
   name: 'Menu',
   components: { MenuItem },
@@ -28,22 +30,27 @@ export default {
     return {
       menuList,
       defaultActiveMenuOption,
+      active: defaultActive,
     };
   },
   methods: {
     onSelect(key) {
       const menu = searchMenuOptions(key, menuList);
       const { path = '' } = menu || {};
-      if (!path) {
+      this.active = key;
+      if (!path || path === this.$route.path) {
         return;
       }
 
-      this.$router.push({ path });
+      this.$router.push(path);
     },
   },
   mounted() {
     this.$nextTick(() => {
-      this.onSelect(defaultActiveMenuOption?.key);
+      const { hash = '' } = window.location;
+      let path = hash.split('?')[0];
+      path = path.replace('#', '');
+      this.onSelect(path || defaultActive);
     });
   },
 };

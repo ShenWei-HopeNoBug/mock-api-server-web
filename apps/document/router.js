@@ -7,7 +7,7 @@ const router = new Router({
   mode: 'hash',
   routes: [
     {
-      path: '/introduction',
+      path: '/',
       name: 'introduction',
       component: () => import('./views/introduction/index.vue'),
     },

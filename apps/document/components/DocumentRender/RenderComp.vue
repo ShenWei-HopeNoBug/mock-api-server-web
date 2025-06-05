@@ -18,15 +18,15 @@ export default {
     },
   },
   computed: {
+    visible() {
+      return Boolean(registeredComps[this.compName]);
+    },
     compName() {
       return this.options?.compName || '';
     },
     compData() {
       const compData = this.options?.compData;
       return isObject(compData) ? compData : {};
-    },
-    visible() {
-      return Boolean(registeredComps[this.compName]);
     },
   },
 };

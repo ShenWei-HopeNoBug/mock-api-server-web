@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: 'Image',
+  name: 'InsertImage',
   props: {
     compData: {
       type: Object,
@@ -27,7 +27,7 @@ export default {
 <style scoped lang="less">
 .image {
   max-width: 100%;
-  min-width: 200px;
+  min-width: 375px;
   border-radius: 8px;
 }
 </style>

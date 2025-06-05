@@ -2,9 +2,9 @@ import { generateMenus, getDefaultActiveMenu } from './tools';
 
 const menuList = generateMenus([
   {
-    key: '/introduction',
+    key: '/',
     title: '简介',
-    path: '/introduction',
+    path: '/',
   },
   {
     title: '文档',
