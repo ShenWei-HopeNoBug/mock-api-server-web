@@ -10,16 +10,44 @@ const renderList = [
         content: '抓取数据',
       },
     },
+  ],
+  [
     {
-      compName: 'RichText',
+      compName: 'Title',
       compData: {
-        content: '应用使用了 mitmproxy 第三方抓包库来抓取数据，抓包前必须先安装 mitmproxy-ca 证书。',
+        type: 'h3',
+        content: '安装证书',
       },
     },
     {
       compName: 'RichText',
       compData: {
-        content: '需要进行抓包操作时，建议打开带黑窗的.exe应用（应用根目录文件名中包含.win 的 .exe应用），便于查看抓包过程中的日志信息。' +
+        content: '应用使用了 mitmproxy 第三方抓包库来抓取数据，抓包前必须先安装 mitmproxy-ca 证书。' +
+          '（在应用根目录的 /resources 文件夹中，有下载好的证书压缩包 .mitmproxy-ca.7z）',
+      },
+    },
+    {
+      compName: 'RichText',
+      compData: {
+        content:
+          '<a href="https://docs.mitmproxy.org/stable/concepts/certificates/" target="_blank">mitmproxy官方文档</a>' +
+          '<a style="margin-left: 24px" href="https://blog.csdn.net/qq_36841447/article/details/134012335" ' +
+          'target="_blank">mitmproxy证书安装教程</a>',
+      },
+    },
+  ],
+  [
+    {
+      compName: 'Title',
+      compData: {
+        type: 'h3',
+        content: '抓包配置',
+      },
+    },
+    {
+      compName: 'RichText',
+      compData: {
+        content:
           '主界面的【抓包配置】可以设置抓包服务的端口号以及是否以追加模式抓取数据，不勾选【以追加模式抓取】选项时，' +
           '关闭抓包服务结束抓包后，历史的抓包数据会清空，被新的抓包数据完全替换。',
       },
@@ -47,6 +75,28 @@ const renderList = [
       compData: {
         src: editMitmproxyDialogImage,
         style: { width: '800px' },
+      },
+    },
+  ],
+  [
+    {
+      compName: 'Title',
+      compData: {
+        type: 'h3',
+        content: '开始抓包',
+      },
+    },
+    {
+      compName: 'RichText',
+      compData: {
+        content: '<span style="color:red">需要进行抓包操作时，建议使用带黑窗的 .exe 应用</span>' +
+          '（应用根目录文件名中包含.win 的 .exe应用），便于查看抓包过程中的日志信息。',
+      },
+    },
+    {
+      compName: 'RichText',
+      compData: {
+        content: '在抓取数据时需要配置代理，需要将 http 请求代理到抓包服务上，用配置全局代理或用浏览器proxy插件之类的都可以。',
       },
     },
     {
