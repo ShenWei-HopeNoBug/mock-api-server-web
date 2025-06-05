@@ -2,15 +2,17 @@ import { generateMenus, getDefaultActiveMenu } from './tools';
 
 const menuList = generateMenus([
   {
+    key: '/introduction',
     title: '简介',
-    path: '/introduction'
+    path: '/introduction',
   },
   {
     title: '文档',
     children: [
       {
+        key: '/basic-usage',
         title: '基本使用',
-        path: '/basic-usage'
+        path: '/basic-usage',
       },
     ],
   },

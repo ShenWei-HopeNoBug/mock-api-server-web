@@ -6,7 +6,7 @@
       :key="`area_${i}`"
       class="render-area"
     >
-      <div v-if="checkArrayValid(item)" v-for="(conf, j) in item" :key="`comp_${j}`">
+      <div v-if="checkArrayValid(item)" class="comp" v-for="(conf, j) in item" :key="`comp_${j}`">
         <slot v-if="conf?.slot && conf?.slotName" :name="conf?.slotName" :options="conf"></slot>
         <RenderComp v-else :options="conf" />
       </div>
@@ -40,6 +40,10 @@ export default {
 
   .render-area {
     margin-bottom: 24px;
+
+    .comp {
+      margin-bottom: 12px;
+    }
   }
 }
 </style>

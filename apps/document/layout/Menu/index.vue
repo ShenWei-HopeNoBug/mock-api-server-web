@@ -34,7 +34,6 @@ export default {
     onSelect(key) {
       const menu = searchMenuOptions(key, menuList);
       const { path = '' } = menu || {};
-      console.log(menu, path);
       if (!path) {
         return;
       }

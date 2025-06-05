@@ -1,14 +1,18 @@
 <template>
-  <div>basicUsage</div>
+  <DocumentRender :renderList="renderList"></DocumentRender>
 </template>
 
 <script>
+import DocumentRender from 'apps/document/components/DocumentRender/index.vue';
+import { renderList } from './config';
+
 export default {
   name: 'basicUsage',
+  components: { DocumentRender },
   data() {
-    return {};
+    return {
+      renderList,
+    };
   },
 };
 </script>
-
-<style scoped lang="less"></style>

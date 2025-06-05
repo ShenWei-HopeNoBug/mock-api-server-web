@@ -6,14 +6,14 @@ export const generateMenus = (menus = []) =>
   menus.map(item => {
     if (isArrayValid(item.children)) {
       return {
+        key: generateUUID(),
         ...item,
         children: generateMenus(item.children),
-        key: generateUUID(),
       };
     } else {
       return {
-        ...item,
         key: generateUUID(),
+        ...item,
       };
     }
   });
