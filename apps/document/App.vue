@@ -1,11 +1,15 @@
 <template>
-  <div class="app">App document</div>
+  <div class="app">
+    <Layout />
+  </div>
 </template>
 
 <script>
+import Layout from 'apps/document/layout/index.vue';
+
 export default {
   name: 'App',
-  components: {},
+  components: { Layout },
 };
 </script>
 
@@ -25,6 +29,5 @@ export default {
 .app {
   width: 100%;
   height: 100%;
-  padding: 20px;
 }
 </style>

@@ -43,3 +43,17 @@ export const copy = (text = '') => {
     document.body.removeChild(input);
   }
 };
+
+// 生成uuid
+export const generateUUID = () => {
+  const NUM1 = 16;
+  const NUM2 = 0x3;
+  const NUM3 = 0x8;
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = (Math.random() * NUM1) | 0;
+    const v = c === 'x' ? r : (r & NUM2) | NUM3;
+    return v.toString(NUM1);
+  });
+};
+
+export const isArrayValid = arr => Array.isArray(arr) && arr.length > 0;

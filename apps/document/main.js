@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import App from './App.vue';
+import router from './router';
 
 import 'src/assets/style/reset.css';
 
@@ -26,5 +27,6 @@ import installDomResizeDirective from 'src/assets/js/installDomResizeDirective';
 installDomResizeDirective(Vue);
 
 window.vm = new Vue({
+  router,
   render: h => h(App),
 }).$mount('#app');

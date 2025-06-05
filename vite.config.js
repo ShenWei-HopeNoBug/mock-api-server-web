@@ -44,7 +44,7 @@ export default defineConfig({
     },
   },
   plugins: [
-    basicSsl(),
+    // basicSsl(),
     dynamicImport(),
     vue2(),
     antdvFix(),
