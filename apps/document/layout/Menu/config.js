@@ -21,8 +21,13 @@ const menuList = generateMenus([
       },
       {
         key: '/download',
-        title: '下载静态资源',
+        title: '静态资源',
         path: '/download',
+      },
+      {
+        key: '/server',
+        title: 'Mock服务',
+        path: '/server',
       },
     ],
   },

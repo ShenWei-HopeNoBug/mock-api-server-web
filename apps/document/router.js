@@ -26,6 +26,11 @@ const router = new Router({
       name: 'download',
       component: () => import('./views/document/download/index.vue'),
     },
+    {
+      path: '/server',
+      name: 'server',
+      component: () => import('./views/document/server/index.vue'),
+    },
   ],
 });
 

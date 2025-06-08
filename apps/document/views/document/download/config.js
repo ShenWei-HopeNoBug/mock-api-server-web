@@ -14,6 +14,15 @@ const renderList = [
     {
       compName: 'Title',
       compData: {
+        content: '静态资源',
+      },
+    },
+  ],
+  [
+    {
+      compName: 'Title',
+      compData: {
+        type: 'h3',
         content: '下载静态资源',
       },
     },
@@ -21,8 +30,8 @@ const renderList = [
       compName: 'RichText',
       compData: {
         content: '抓包得到的接口数据中，可能存在静态资源链接，在 mock 接口时可能需要下载到本地。点击菜单【编辑】下拉框的【编辑下载配置】，' +
-          '可配置解析的静态资源链接文件类型。配置完成后，点击主界面的下载静态资源，就会下载到工作目录的 /static 文件夹内，启动服务时会自动把接口' +
-          '数据中匹配到的静态链接换成本地服务的静态资源链接。',
+          '可配置解析的静态资源链接文件类型。配置完成后，点击主界面的下载静态资源，就会下载到工作目录的 /static 文件夹内，启动服务时会将' +
+          '/static 文件夹作为服务的静态资源目录使用。',
       },
     },
     {
@@ -66,6 +75,7 @@ const renderList = [
     {
       compName: 'Title',
       compData: {
+        type: 'h3',
         content: '导出静态资源',
       },
     },
