@@ -44,7 +44,7 @@ const renderList = [
       compName: 'InsertImage',
       compData: {
         src: wsdImage3,
-        style: { width: '600px' },
+        style: { width: '800px' },
       },
     },
   ],

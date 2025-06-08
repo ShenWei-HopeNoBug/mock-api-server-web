@@ -31,6 +31,11 @@ const router = new Router({
       name: 'server',
       component: () => import('./views/document/server/index.vue'),
     },
+    {
+      path: '/customApi',
+      name: 'customApi',
+      component: () => import('./views/document/customApi/index.vue'),
+    },
   ],
 });
 

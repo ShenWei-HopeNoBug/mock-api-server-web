@@ -29,6 +29,11 @@ const menuList = generateMenus([
         title: 'Mock服务',
         path: '/server',
       },
+      {
+        key: '/customApi',
+        title: '手动Mock接口',
+        path: '/customApi',
+      },
     ],
   },
 ]);
