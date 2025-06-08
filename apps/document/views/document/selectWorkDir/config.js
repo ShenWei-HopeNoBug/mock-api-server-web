@@ -1,5 +1,6 @@
-import workDirFileCheckImage from 'apps/document/assets/image/baseUsage/work-dir-file-check.png';
-import selectWorkDirImage from 'apps/document/assets/image/baseUsage/select-work-dir.png';
+import wsdImage1 from 'apps/document/assets/image/selectWorkDir/swd-1.webp';
+import wsdImage2 from 'apps/document/assets/image/selectWorkDir/swd-2.webp';
+import wsdImage3 from 'apps/document/assets/image/selectWorkDir/swd-3.webp';
 
 // 选择工作目录渲染配置
 const renderList = [
@@ -21,22 +22,29 @@ const renderList = [
     {
       compName: 'InsertImage',
       compData: {
-        src: workDirFileCheckImage,
-        style: { width: '800px' },
+        src: wsdImage1,
+        style: { width: '600px' },
+      },
+    },
+    {
+      compName: 'InsertImage',
+      compData: {
+        src: wsdImage2,
+        style: { width: '600px' },
       },
     },
     {
       compName: 'RichText',
       compData: {
-        content: '如果要切换工作目录，可在菜单的【文件】下拉框点击【切换工作目录】进行切换，切换时会校验待切换目录内的文件完整性，' +
+        content: '如果要切换工作目录，可在菜单的【文件】下拉框点击【更换工作目录】进行切换，切换时会校验待切换目录内的文件完整性，' +
           '出现文件完整性提示一般点确定即可。要创建新的工作目录，可随便建一个文件夹，点击【切换工作目录】切换到该文件夹进行创建。',
       },
     },
     {
       compName: 'InsertImage',
       compData: {
-        src: selectWorkDirImage,
-        style: { width: '800px' },
+        src: wsdImage3,
+        style: { width: '600px' },
       },
     },
   ],

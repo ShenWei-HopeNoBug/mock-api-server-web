@@ -19,6 +19,11 @@ const menuList = generateMenus([
         title: '抓取数据',
         path: '/request-catch',
       },
+      {
+        key: '/download',
+        title: '下载静态资源',
+        path: '/download',
+      },
     ],
   },
 ]);

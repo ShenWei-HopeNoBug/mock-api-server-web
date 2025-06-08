@@ -21,6 +21,11 @@ const router = new Router({
       name: 'request-catch',
       component: () => import('./views/document/requestCatch/index.vue'),
     },
+    {
+      path: '/download',
+      name: 'download',
+      component: () => import('./views/document/download/index.vue'),
+    },
   ],
 });
 
