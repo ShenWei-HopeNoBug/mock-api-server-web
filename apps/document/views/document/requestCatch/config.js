@@ -167,7 +167,7 @@ const renderList = [
     {
       compName: 'RichText',
       compData: {
-        content: '想看抓包抓到的数据，可以在在菜单【编辑】下拉框点击【查看抓包数据】打开详情 html 页面。',
+        content: '想看抓包抓到的数据，可以在在菜单【文件】下拉框点击【查看抓包数据】打开详情 html 页面。',
       },
     },
     {
