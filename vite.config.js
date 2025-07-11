@@ -29,7 +29,11 @@ export default defineConfig({
       warnOnError: true,
     },
     rollupOptions: {
-      input: [`${APPS}/dataPreview/index.html`, `${APPS}/document/index.html`],
+      input: [
+        `${APPS}/dataPreview/index.html`,
+        `${APPS}/document/index.html`,
+        `${APPS}/dataManager/index.html`,
+      ],
       output: {
         dir: 'web',
         chunkFileNames: 'static/chunk/[name]-[hash].js',
