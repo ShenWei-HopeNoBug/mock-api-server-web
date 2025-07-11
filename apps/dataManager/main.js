@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import App from './App.vue';
+import InteractObjManager from 'src/assets/js/InteractObjManager';
 
 import 'src/assets/style/reset.css';
 
@@ -25,6 +26,8 @@ import installDomResizeDirective from 'src/assets/js/installDomResizeDirective';
 
 installDomResizeDirective(Vue);
 
-window.vm = new Vue({
-  render: h => h(App),
-}).$mount('#app');
+InteractObjManager.init().then(() => {
+  window.vm = new Vue({
+    render: h => h(App),
+  }).$mount('#app');
+});
