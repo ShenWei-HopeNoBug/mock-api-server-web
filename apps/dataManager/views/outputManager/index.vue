@@ -12,7 +12,13 @@
       </div>
     </el-card>
     <el-card v-dom-resize="onResize" class="content">
-      <el-table ref="table" :data="tableData" highlight-current-row :height="tableHeight">
+      <el-table
+        ref="table"
+        v-loading="requestActionIdMap?.get_mock_data"
+        :data="tableData"
+        :height="tableHeight"
+        :highlight-current-row="true"
+      >
         <el-table-column type="index" width="50" />
         <el-table-column
           v-for="(item, i) in tableColumns"
@@ -47,6 +53,8 @@ import UserApiEditorDialog from './components/UserApiEditorDialog/index.vue';
 import DetailDialog from './components/DetailDialog/index.vue';
 import UploadModel from 'src/components/UploadModel/index.vue';
 import { searchFormColumns, tableColumns, filterMethod } from './config';
+import InteractObjManager from 'src/assets/js/InteractObjManager';
+import { isJsonString, generateUUID } from 'src/assets/js/utils';
 
 export default {
   name: 'outputManager',
@@ -54,10 +62,14 @@ export default {
   data() {
     return {
       searchFormColumns,
+      searchForm: {},
       dataSource: [],
       tableData: [],
       curRow: {},
       tableHeight: '550px',
+      requestActionIdMap: {
+        get_mock_data: '',
+      },
     };
   },
   computed: {
@@ -98,12 +110,63 @@ export default {
 
     },
   },
-  created() {
-    this.dataSource = Array.isArray(window.MITMPROXY_OUTPUT) ? window.MITMPROXY_OUTPUT : [];
-    this.tableData = this.dataSource;
+  beforeDestroy() {
+    InteractObjManager.off('receive', this.onReceive);
+  },
+  mounted() {
+    this.init();
   },
   methods: {
+    init() {
+      InteractObjManager.on('receive', this.onReceive);
+      InteractObjManager.sendObjMsg({ type: 'loaded' });
+      this.$nextTick(() => {
+        this.getDataSource();
+      });
+    },
+    onReceive(message = '') {
+      const eventData = isJsonString(message) ? JSON.parse(message) : {};
+      const { type = '' } = eventData;
+      if (type === 'request') {
+        this.onRequestEvent(eventData);
+      }
+    },
+    // 处理请求类型的事件
+    onRequestEvent(eventData = {}) {
+      const { type = '', name = '', data = {}, action_id = '' } = eventData;
+      if (type !== 'request') {
+        return;
+      }
+
+      if (!action_id || action_id !== this.requestActionIdMap[name]) {
+        return;
+      }
+
+      switch (name) {
+        case 'get_mock_data': {
+          this.$message.info('get_mock_data')
+          const { list = [] } = data;
+          this.dataSource = Array.isArray(list) ? list : [];
+          this.onSearch(this.searchForm);
+          this.requestActionIdMap[name] = '';
+          break;
+        }
+        default:
+      }
+    },
+    // 获取数据源
+    getDataSource() {
+      const action_id = generateUUID();
+      this.requestActionIdMap.get_mock_data = action_id;
+      InteractObjManager.sendObjMsg({
+        type: 'request',
+        name: 'get_mock_data',
+        params: {},
+        action_id,
+      });
+    },
     onSearch(searchForm = {}) {
+      this.searchForm = cloneDeep(searchForm);
       const keyList = searchFormColumns.map(item => item.key);
       const matchList = [];
       // 模糊匹配配置

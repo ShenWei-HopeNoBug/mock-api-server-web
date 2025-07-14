@@ -1,23 +1,23 @@
 const createEventBus = () => ({
-  events: {},
+  _events: {},
   on(eventName, callback) {
     // 已经绑定过的回调，不重复绑定
     if (!eventName || this.isEventBind(eventName, callback)) {
       return;
     }
 
-    if (!this.events[eventName]) {
-      this.events[eventName] = [];
+    if (!this._events[eventName]) {
+      this._events[eventName] = [];
     }
 
-    this.events[eventName].push(callback);
+    this._events[eventName].push(callback);
   },
   off(eventName, callback) {
     if (!eventName) {
       return;
     }
 
-    const callbacks = this.events[eventName];
+    const callbacks = this._events[eventName];
     if (!callbacks) {
       return;
     }
@@ -31,7 +31,7 @@ const createEventBus = () => ({
       return;
     }
 
-    const callbacks = this.events[eventName];
+    const callbacks = this._events[eventName];
     if (!callbacks) {
       return;
     }
@@ -46,7 +46,7 @@ const createEventBus = () => ({
       return false;
     }
 
-    const callbacks = this.events[eventName];
+    const callbacks = this._events[eventName];
     if (!callbacks) {
       return false;
     }
@@ -56,7 +56,7 @@ const createEventBus = () => ({
   },
   // 删除所有的绑定事件
   removeAllEvents() {
-    this.events = {};
+    this._events = {};
   },
 });
 

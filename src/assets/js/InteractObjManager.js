@@ -4,10 +4,8 @@ import { isObject } from 'lodash';
 import { createEventBus } from 'src/assets/js/eventBus';
 
 let interactObj = null;
-const bus = createEventBus();
 
 const InteractObjManager = {
-  ...bus,
   init() {
     return new Promise(resolve => {
       getWebChannelInteractObj().then(result => {
@@ -48,5 +46,8 @@ const InteractObjManager = {
     this.emit('receive', message);
   },
 };
+
+// 将 InteractObjManager 原型指向 bus 继承属性和方法
+Object.setPrototypeOf(InteractObjManager, createEventBus());
 
 export default InteractObjManager;
