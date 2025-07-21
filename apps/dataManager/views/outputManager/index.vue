@@ -34,17 +34,16 @@
             <div v-else>{{ scope.row[item.key] }}</div>
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right" width="200">
+        <el-table-column label="操作" fixed="right" width="220">
           <template slot-scope="scope">
             <div class="operation">
               <el-button type="text" @click="onDetail(scope.row)">查看详情</el-button>
-              <el-button
-                v-if="scope.row.type === 'USER'"
-                type="text"
-                @click="onEdit(scope.row)"
-              >
-                编辑
-              </el-button>
+              <template v-if="scope.row.type === 'USER'">
+                <el-button type="text" @click="onEdit(scope.row)">编辑</el-button>
+                <el-popconfirm style="margin-left: 10px;" title="确认删除？" @confirm="onDelete(scope.row)">
+                  <el-button slot="reference" type="text" style="color: rgb(245, 108, 108)">删除</el-button>
+                </el-popconfirm>
+              </template>
             </div>
           </template>
         </el-table-column>
@@ -87,6 +86,7 @@ export default {
         fix_mock_data: '',
         edit_mock_data: '',
         add_mock_data: '',
+        delete_mock_data: '',
       },
     };
   },
@@ -95,7 +95,8 @@ export default {
       return Boolean(this.actionIdMap?.fix_mock_data);
     },
     tableLoading() {
-      return Boolean(this.actionIdMap?.get_mock_data);
+      const { get_mock_data = '', delete_mock_data = '' } = this.actionIdMap || {};
+      return Boolean(get_mock_data || delete_mock_data);
     },
     editLoading() {
       const { edit_mock_data = '', add_mock_data = '' } = this.actionIdMap || {};
@@ -135,7 +136,6 @@ export default {
 
         return item;
       });
-
     },
   },
   beforeDestroy() {
@@ -158,6 +158,27 @@ export default {
       if (type === 'request') {
         this.onRequestEvent(eventData);
       }
+    },
+    sendRequestMessage(options = {}) {
+      // webChannel 未注册成功，跳过
+      if (!InteractObjManager.isRegistered()) {
+        return;
+      }
+
+      const { data = {}, name = '' } = options;
+      if (!name) {
+        return;
+      }
+
+      const action_id = generateUUID();
+      this.actionIdMap[name] = action_id;
+      InteractObjManager.sendObjMsg({
+        params: {},
+        ...data,
+        type: 'request',
+        name,
+        action_id,
+      });
     },
     // 处理请求类型的事件
     onRequestEvent(eventData = {}) {
@@ -210,6 +231,16 @@ export default {
 
           break;
         }
+        case 'delete_mock_data': {
+          if (data) {
+            this.$message.success('删除接口数据成功');
+            this.getDataSource();
+          } else {
+            this.$message.error('删除接口数据失败');
+          }
+
+          break;
+        }
         default:
       }
 
@@ -225,13 +256,8 @@ export default {
         return;
       }
 
-      const action_id = generateUUID();
-      this.actionIdMap.get_mock_data = action_id;
-      InteractObjManager.sendObjMsg({
-        type: 'request',
+      this.sendRequestMessage({
         name: 'get_mock_data',
-        params: {},
-        action_id,
       });
     },
     onSearch(searchForm = {}) {
@@ -287,16 +313,23 @@ export default {
       const tableHeight = Math.max(minHeight, height - offset);
       this.tableHeight = `${tableHeight}px`;
     },
-    onEdit(record = {}) {
+    checkApiDataValid(record = {}) {
       const { id = '' } = record || {};
-      this.$message.info(`id: ${record.id}`);
-      if (!id) {
+      const valid = Boolean(id);
+
+      if (!valid) {
         this.$confirm('检测到接口数据异常，是否修复？', '确认', {
           type: 'error',
-          callback: () => {
-            this.onFixMockData();
-          },
+        }).then(() => {
+          this.onFixMockData();
         });
+      }
+
+      return Boolean(id);
+    },
+    onEdit(record = {}) {
+      // 检查数据是否合法
+      if (!this.checkApiDataValid(record)) {
         return;
       }
 
@@ -304,13 +337,8 @@ export default {
       this.$refs.userApiEditorDialog?.show?.({ isEdit: true });
     },
     onFixMockData() {
-      const action_id = generateUUID();
-      this.actionIdMap.fix_mock_data = action_id;
-      InteractObjManager.sendObjMsg({
-        type: 'request',
+      this.sendRequestMessage({
         name: 'fix_mock_data',
-        params: {},
-        action_id,
       });
     },
     onEditSubmit(formData = {}) {
@@ -321,13 +349,9 @@ export default {
       }
 
       const params = { id, ...formData };
-      const action_id = generateUUID();
-      this.actionIdMap.edit_mock_data = action_id;
-      InteractObjManager.sendObjMsg({
-        type: 'request',
+      this.sendRequestMessage({
         name: 'edit_mock_data',
-        params,
-        action_id,
+        data: { params },
       });
     },
     onAdd() {
@@ -335,13 +359,9 @@ export default {
       this.$refs.userApiEditorDialog?.show?.({ isEdit: false });
     },
     onAddSubmit(formData = {}) {
-      const action_id = generateUUID();
-      this.actionIdMap.add_mock_data = action_id;
-      InteractObjManager.sendObjMsg({
-        type: 'request',
+      this.sendRequestMessage({
         name: 'add_mock_data',
-        params: formData,
-        action_id,
+        data: { params: formData },
       });
     },
     onUserApiEditorSubmit(data = {}) {
@@ -356,6 +376,19 @@ export default {
       this.curRow = {};
       this.actionIdMap.edit_mock_data = '';
       this.actionIdMap.add_mock_data = '';
+    },
+    onDelete(record = {}) {
+      // 检查数据是否合法
+      if (!this.checkApiDataValid(record)) {
+        return;
+      }
+
+      const { id = '' } = record;
+      const params = { id };
+      this.sendRequestMessage({
+        name: 'delete_mock_data',
+        data: { params },
+      });
     },
   },
 };
