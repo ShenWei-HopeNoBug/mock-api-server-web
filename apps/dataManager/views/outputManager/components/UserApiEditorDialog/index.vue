@@ -20,6 +20,7 @@
           <template #inputSlot="scope">
             <template v-if="scope.inputKey === 'params'">
               <JsonInput
+                ref="paramsRef"
                 v-model="scope.form[scope.inputKey]"
                 :copy="true"
                 :code-editor-bind-attrs="previewCodeEditorProps"
@@ -27,6 +28,7 @@
             </template>
             <template v-else-if="scope.inputKey === 'response'">
               <JsonInput
+                ref="responseRef"
                 v-model="scope.form[scope.inputKey]"
                 :copy="true"
                 :code-editor-bind-attrs="previewCodeEditorProps"
@@ -123,8 +125,25 @@ export default {
       this.$emit('close', this.isEdit);
       this.initStates();
     },
+    checkJsonValid() {
+      const paramsValid = this.$refs.paramsRef?.validate?.();
+      if (!paramsValid) {
+        this.$message.error('Params 输入的 json 不合法');
+        return false;
+      }
+
+      const responseValid = this.$refs.responseRef?.validate?.();
+      if (!responseValid) {
+        this.$message.error('Response 输入的 json 不合法');
+        return false;
+      }
+
+      return true;
+    },
     triggerSubmit() {
-      this.$refs.baseForm?.onSubmit?.();
+      if (this.checkJsonValid()) {
+        this.$refs.baseForm?.onSubmit?.();
+      }
     },
     onSubmit(formData = {}) {
       this.$emit('submit', {

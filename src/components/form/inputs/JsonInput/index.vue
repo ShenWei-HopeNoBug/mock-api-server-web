@@ -125,6 +125,10 @@ export default {
     refresh() {
       this.$refs.codeEditor && this.$refs.codeEditor.refresh();
     },
+    // 是否合法
+    validate() {
+      return isJsonString(this.value);
+    },
     onCopy() {
       const content = isJsonString(this.value) ?
         JSON.stringify(JSON.parse(this.value)) : this.defaultCopyContent;
