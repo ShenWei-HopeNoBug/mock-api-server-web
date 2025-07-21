@@ -1,5 +1,5 @@
 import { cloneDeep } from 'lodash';
-import { isJsonString } from 'src/assets/js/utils';
+import { generateUUID, isJsonString } from 'src/assets/js/utils';
 
 const userApiEditFormColumns = [
   {
@@ -80,7 +80,10 @@ const formConfig = {
       submitForm['params'] = JSON.stringify(paramsObj);
     }
 
-    return submitForm;
+    return {
+      id: generateUUID(),
+      ...submitForm,
+    };
   },
 };
 
