@@ -1,12 +1,11 @@
 <template>
-  <div class="output-manager">
+  <div v-loading="pageLoading" class="output-manager">
     <el-card class="header">
       <div class="search-bar">
         <SearchForm :show-columns="searchFormColumns" @onSearch="onSearch" />
       </div>
       <div class="tool-bar">
         <div class="btn-group">
-          <el-button type="primary" size="small" @click="onEditUserApi">用户接口编辑器</el-button>
           <el-button type="primary" size="small" @click="onClearFilter">清除所有过滤器</el-button>
         </div>
       </div>
@@ -36,20 +35,28 @@
         </el-table-column>
         <el-table-column label="操作" fixed="right" width="200">
           <template slot-scope="scope">
-            <el-button type="text" @click="onDetail(scope.row)">查看详情</el-button>
-            <el-button
-              v-if="scope.row.type === 'USER'"
-              type="text"
-              @click="onEdit(scope.row)"
-            >
-              编辑
-            </el-button>
+            <div class="operation">
+              <el-button type="text" @click="onDetail(scope.row)">查看详情</el-button>
+              <el-button
+                v-if="scope.row.type === 'USER'"
+                type="text"
+                @click="onEdit(scope.row)"
+              >
+                编辑
+              </el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
-    <UserApiEditorDialog ref="userApiEditorDialog" />
-    <DetailDialog ref="detailDialog" :data-source="curRow" @close="onDialogClose" />
+    <UserApiEditorDialog
+      ref="userApiEditorDialog"
+      :init-form-data="curRow"
+      :loading="editLoading"
+      @submit="onEditSubmit"
+      @close="onUserApiEditorDialogClose"
+    />
+    <DetailDialog ref="detailDialog" :data-source="curRow" @close="onDetailDialogClose" />
   </div>
 </template>
 
@@ -77,13 +84,19 @@ export default {
       actionIdMap: {
         get_mock_data: '',
         fix_mock_data: '',
+        edit_mock_data: '',
       },
     };
   },
   computed: {
+    pageLoading() {
+      return Boolean(this.actionIdMap?.fix_mock_data);
+    },
     tableLoading() {
-      const keyList = Object.keys(this.actionIdMap);
-      return keyList.some(key => Boolean(this.actionIdMap[key]));
+      return Boolean(this.actionIdMap?.get_mock_data);
+    },
+    editLoading() {
+      return Boolean(this.actionIdMap?.edit_mock_data);
     },
     urlFilters() {
       const urlSet = new Set();
@@ -163,13 +176,24 @@ export default {
         }
         case 'fix_mock_data': {
           if (data) {
-            this.$message.success('修复异常数据成功');
+            this.$message.success('修复异常接口数据成功');
           } else {
-            this.$message.error('修复异常数据失败');
+            this.$message.error('修复异常接口数据失败');
           }
 
           // 刷新数据源
           this.getDataSource();
+          break;
+        }
+        case 'edit_mock_data': {
+          if (data) {
+            this.$message.success('更新接口数据成功');
+            this.getDataSource();
+            this.$refs.userApiEditorDialog?.close?.();
+          } else {
+            this.$message.error('更新接口数据失败');
+          }
+
           break;
         }
         default:
@@ -192,6 +216,7 @@ export default {
       InteractObjManager.sendObjMsg({
         type: 'request',
         name: 'get_mock_data',
+        params: {},
         action_id,
       });
     },
@@ -227,9 +252,6 @@ export default {
       this.tableData = this.dataSource.filter(item => isMatch(item));
       this.onClearFilter();
     },
-    onEditUserApi() {
-      this.$refs.userApiEditorDialog?.show?.();
-    },
     onClearFilter() {
       this.$refs.table?.clearFilter?.();
     },
@@ -237,7 +259,7 @@ export default {
       this.curRow = cloneDeep(record);
       this.$refs.detailDialog?.show?.();
     },
-    onDialogClose() {
+    onDetailDialogClose() {
       this.curRow = {};
     },
     onResize(entry) {
@@ -255,13 +277,17 @@ export default {
       const { id = '' } = record || {};
       this.$message.info(`id: ${record.id}`);
       if (!id) {
-        this.$confirm('检测到数据异常，是否修复？', '确认', {
+        this.$confirm('检测到接口数据异常，是否修复？', '确认', {
           type: 'error',
           callback: () => {
             this.onFixMockData();
           },
         });
+        return;
       }
+
+      this.curRow = cloneDeep(record);
+      this.$refs.userApiEditorDialog?.show?.({ isEdit: true });
     },
     onFixMockData() {
       const action_id = generateUUID();
@@ -269,8 +295,30 @@ export default {
       InteractObjManager.sendObjMsg({
         type: 'request',
         name: 'fix_mock_data',
+        params: {},
         action_id,
       });
+    },
+    onEditSubmit(formData = {}) {
+      const { id = '' } = this.curRow;
+      if (!id) {
+        this.$message.error('编辑接口数据失败！');
+        return;
+      }
+
+      const params = { id, ...formData };
+      const action_id = generateUUID();
+      this.actionIdMap.edit_mock_data = action_id;
+      InteractObjManager.sendObjMsg({
+        type: 'request',
+        name: 'edit_mock_data',
+        params,
+        action_id,
+      });
+    },
+    onUserApiEditorDialogClose() {
+      this.curRow = {};
+      this.actionIdMap.edit_mock_data = '';
     },
   },
 };
@@ -307,6 +355,11 @@ export default {
     flex: 1;
     width: 100%;
     height: 100%;
+
+    .operation {
+      display: flex;
+      gap: 6px;
+    }
   }
 
   .params {
