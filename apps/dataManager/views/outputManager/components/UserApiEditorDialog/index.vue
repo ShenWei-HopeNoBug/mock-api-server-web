@@ -127,7 +127,10 @@ export default {
       this.$refs.baseForm?.onSubmit?.();
     },
     onSubmit(formData = {}) {
-      this.$emit('submit', formData);
+      this.$emit('submit', {
+        form: formData,
+        isEdit: this.isEdit,
+      });
     },
   },
 };

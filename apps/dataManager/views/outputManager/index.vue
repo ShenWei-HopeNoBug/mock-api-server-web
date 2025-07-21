@@ -6,6 +6,7 @@
       </div>
       <div class="tool-bar">
         <div class="btn-group">
+          <el-button type="primary" size="small" @click="onAdd">新增Mock接口</el-button>
           <el-button type="primary" size="small" @click="onClearFilter">清除所有过滤器</el-button>
         </div>
       </div>
@@ -53,7 +54,7 @@
       ref="userApiEditorDialog"
       :init-form-data="curRow"
       :loading="editLoading"
-      @submit="onEditSubmit"
+      @submit="onUserApiEditorSubmit"
       @close="onUserApiEditorDialogClose"
     />
     <DetailDialog ref="detailDialog" :data-source="curRow" @close="onDetailDialogClose" />
@@ -85,6 +86,7 @@ export default {
         get_mock_data: '',
         fix_mock_data: '',
         edit_mock_data: '',
+        add_mock_data: '',
       },
     };
   },
@@ -96,7 +98,8 @@ export default {
       return Boolean(this.actionIdMap?.get_mock_data);
     },
     editLoading() {
-      return Boolean(this.actionIdMap?.edit_mock_data);
+      const { edit_mock_data = '', add_mock_data = '' } = this.actionIdMap || {};
+      return Boolean(edit_mock_data || add_mock_data);
     },
     urlFilters() {
       const urlSet = new Set();
@@ -192,6 +195,17 @@ export default {
             this.$refs.userApiEditorDialog?.close?.();
           } else {
             this.$message.error('更新接口数据失败');
+          }
+
+          break;
+        }
+        case 'add_mock_data': {
+          if (data) {
+            this.$message.success('新增接口数据成功');
+            this.getDataSource();
+            this.$refs.userApiEditorDialog?.close?.();
+          } else {
+            this.$message.error('新增接口数据失败');
           }
 
           break;
@@ -316,9 +330,32 @@ export default {
         action_id,
       });
     },
+    onAdd() {
+      this.curRow = {};
+      this.$refs.userApiEditorDialog?.show?.({ isEdit: false });
+    },
+    onAddSubmit(formData = {}) {
+      const action_id = generateUUID();
+      this.actionIdMap.add_mock_data = action_id;
+      InteractObjManager.sendObjMsg({
+        type: 'request',
+        name: 'add_mock_data',
+        params: formData,
+        action_id,
+      });
+    },
+    onUserApiEditorSubmit(data = {}) {
+      const { form = {}, isEdit = true } = data;
+      if (isEdit) {
+        this.onEditSubmit(form);
+      } else {
+        this.onAddSubmit(form);
+      }
+    },
     onUserApiEditorDialogClose() {
       this.curRow = {};
       this.actionIdMap.edit_mock_data = '';
+      this.actionIdMap.add_mock_data = '';
     },
   },
 };
