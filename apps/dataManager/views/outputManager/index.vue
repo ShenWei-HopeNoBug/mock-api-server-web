@@ -6,7 +6,7 @@
       </div>
       <div class="tool-bar">
         <div class="btn-group">
-          <el-button type="primary" size="small" @click="onAdd">新增Mock接口</el-button>
+          <el-button type="primary" size="small" @click="onAdd">新增 Mock 接口</el-button>
           <el-button type="primary" size="small" @click="onClearFilter">清除所有过滤器</el-button>
         </div>
       </div>

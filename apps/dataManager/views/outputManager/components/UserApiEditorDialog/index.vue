@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    title="用户接口编辑器"
+    :title="isEdit ? '编辑 Mock 接口' : '新增 Mock 接口'"
     :visible.sync="visible"
     :destroy-on-close="true"
     :center="true"
