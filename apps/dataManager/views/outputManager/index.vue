@@ -14,7 +14,7 @@
     <el-card v-dom-resize="onResize" class="content">
       <el-table
         ref="table"
-        v-loading="requestActionIdMap?.get_mock_data"
+        v-loading="tableLoading"
         :data="tableData"
         :height="tableHeight"
         :highlight-current-row="true"
@@ -37,6 +37,13 @@
         <el-table-column label="操作" fixed="right" width="200">
           <template slot-scope="scope">
             <el-button type="text" @click="onDetail(scope.row)">查看详情</el-button>
+            <el-button
+              v-if="scope.row.type === 'USER'"
+              type="text"
+              @click="onEdit(scope.row)"
+            >
+              编辑
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -67,12 +74,17 @@ export default {
       tableData: [],
       curRow: {},
       tableHeight: '550px',
-      requestActionIdMap: {
+      actionIdMap: {
         get_mock_data: '',
+        fix_mock_data: '',
       },
     };
   },
   computed: {
+    tableLoading() {
+      const keyList = Object.keys(this.actionIdMap);
+      return keyList.some(key => Boolean(this.actionIdMap[key]));
+    },
     urlFilters() {
       const urlSet = new Set();
       const httpReg = new RegExp('^https?:');
@@ -138,30 +150,48 @@ export default {
         return;
       }
 
-      if (!action_id || action_id !== this.requestActionIdMap[name]) {
+      if (!action_id || action_id !== this.actionIdMap[name]) {
         return;
       }
 
       switch (name) {
         case 'get_mock_data': {
-          this.$message.info('get_mock_data')
           const { list = [] } = data;
           this.dataSource = Array.isArray(list) ? list : [];
           this.onSearch(this.searchForm);
-          this.requestActionIdMap[name] = '';
+          break;
+        }
+        case 'fix_mock_data': {
+          if (data) {
+            this.$message.success('修复异常数据成功');
+          } else {
+            this.$message.error('修复异常数据失败');
+          }
+
+          // 刷新数据源
+          this.getDataSource();
           break;
         }
         default:
       }
+
+      // 清除对应的 action_id
+      if (this.actionIdMap[name]) {
+        this.actionIdMap[name] = '';
+      }
     },
     // 获取数据源
     getDataSource() {
+      // webChannel 未注册成功，跳过
+      if (!InteractObjManager.isRegistered()) {
+        return;
+      }
+
       const action_id = generateUUID();
-      this.requestActionIdMap.get_mock_data = action_id;
+      this.actionIdMap.get_mock_data = action_id;
       InteractObjManager.sendObjMsg({
         type: 'request',
         name: 'get_mock_data',
-        params: {},
         action_id,
       });
     },
@@ -220,6 +250,27 @@ export default {
       const minHeight = 200;
       const tableHeight = Math.max(minHeight, height - offset);
       this.tableHeight = `${tableHeight}px`;
+    },
+    onEdit(record = {}) {
+      const { id = '' } = record || {};
+      this.$message.info(`id: ${record.id}`);
+      if (!id) {
+        this.$confirm('检测到数据异常，是否修复？', '确认', {
+          type: 'error',
+          callback: () => {
+            this.onFixMockData();
+          },
+        });
+      }
+    },
+    onFixMockData() {
+      const action_id = generateUUID();
+      this.actionIdMap.fix_mock_data = action_id;
+      InteractObjManager.sendObjMsg({
+        type: 'request',
+        name: 'fix_mock_data',
+        action_id,
+      });
     },
   },
 };

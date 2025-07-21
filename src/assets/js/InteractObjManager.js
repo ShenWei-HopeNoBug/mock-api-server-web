@@ -3,13 +3,18 @@ import { Message } from 'element-ui';
 import { isObject } from 'lodash';
 import { createEventBus } from 'src/assets/js/eventBus';
 
+// 通信对象
 let interactObj = null;
+// 是否注册成功
+let registered = false;
 
 const InteractObjManager = {
   init() {
     return new Promise(resolve => {
       getWebChannelInteractObj().then(result => {
         const { interactObj: interact, error, message: msg = '' } = result;
+        // 更新是否注册标志
+        registered = !error;
         if (error) {
           msg && Message.error(msg);
           resolve();
@@ -30,8 +35,17 @@ const InteractObjManager = {
     });
   },
 
+  // 是否已经注册
+  isRegistered() {
+    return registered;
+  },
+
   // 发送消息给 qt 客户端
   send(message = '') {
+    if (!registered) {
+      return;
+    }
+
     interactObj?.send_js2qt_msg?.(message);
   },
 
