@@ -2,7 +2,11 @@
   <div v-loading="pageLoading" class="output-manager">
     <el-card class="header">
       <div class="search-bar">
-        <SearchForm :show-columns="searchFormColumns" @onSearch="onSearchSubmit" />
+        <SearchForm
+          :init-form-data="initSearchForm"
+          :show-columns="searchFormColumns"
+          @onSearch="onSearchSubmit"
+        />
       </div>
       <div class="tool-bar">
         <div class="btn-group">
@@ -79,7 +83,7 @@ import SearchForm from 'src/components/form/SearchForm/index.vue';
 import UserApiEditorDialog from './components/UserApiEditorDialog/index.vue';
 import DetailDialog from './components/DetailDialog/index.vue';
 import UploadModel from 'src/components/UploadModel/index.vue';
-import { searchFormColumns, tableColumns } from './config';
+import { initSearchForm, searchFormColumns, tableColumns } from './config';
 import InteractObjManager from 'src/assets/js/InteractObjManager';
 import { isJsonString, generateUUID } from 'src/assets/js/utils';
 
@@ -89,8 +93,9 @@ export default {
   data() {
     return {
       tableColumns,
+      initSearchForm,
       searchFormColumns,
-      searchForm: {},
+      searchForm: cloneDeep(initSearchForm),
       dataSource: [],
       tableData: [],
       curRow: {},
@@ -98,7 +103,7 @@ export default {
       total: 0,
       pagination: {
         currentPage: 1,
-        pageSize: 20,
+        pageSize: 10,
         pageSizes: [10, 20, 50, 100],
         layout: 'total, sizes, prev, pager, next, jumper',
       },
@@ -251,7 +256,7 @@ export default {
       }
     },
     // 获取数据源
-    getDataSource(refresh = true) {
+    getDataSource(refresh = true, params = {}) {
       // webChannel 未注册成功，跳过
       if (!InteractObjManager.isRegistered()) {
         return;
@@ -259,9 +264,8 @@ export default {
 
       this.sendRequestMessage({
         name: 'get_mock_data',
-        extra: {
-          refresh,
-        },
+        params,
+        extra: { refresh },
       });
     },
     getRowIndex(index) {
@@ -278,7 +282,15 @@ export default {
       this.onSearch();
     },
     onSearchSubmit(searchForm = {}) {
+      const { type: oldType = '' } = this.searchForm;
+      const { type: newType = '' } = searchForm;
       this.searchForm = cloneDeep(searchForm);
+      // 筛选的数据源有变动，重新请求对应数据
+      if (oldType !== newType) {
+        this.getDataSource(true, { type: newType });
+        return;
+      }
+
       this.pagination.currentPage = 1;
       this.onSearch();
     },
@@ -466,7 +478,7 @@ export default {
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
   }
 }
 </style>

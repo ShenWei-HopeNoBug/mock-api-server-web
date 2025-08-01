@@ -1,3 +1,7 @@
+const initSearchForm = {
+  type: 'USER',
+};
+
 const searchFormColumns = [
   {
     label: '数据来源',
@@ -103,4 +107,4 @@ const tableColumns = [
   },
 ];
 
-export { searchFormColumns, tableColumns, filterMethod };
+export { initSearchForm, searchFormColumns, tableColumns, filterMethod };
