@@ -47,6 +47,9 @@
           <template slot-scope="scope">
             <div class="operation">
               <el-button type="text" @click="onDetail(scope.row)">查看详情</el-button>
+              <el-popconfirm style="margin: 0 10px;" title="确认复制？" @confirm="onCopy(scope.row)">
+                <el-button slot="reference" type="text">复制</el-button>
+              </el-popconfirm>
               <template v-if="scope.row.type === 'USER'">
                 <el-button type="text" @click="onEdit(scope.row)">编辑</el-button>
                 <el-popconfirm style="margin-left: 10px;" title="确认删除？" @confirm="onDelete(scope.row)">
@@ -95,7 +98,7 @@ export default {
       tableColumns,
       initSearchForm,
       searchFormColumns,
-      searchForm: cloneDeep(initSearchForm),
+      searchForm: {},
       dataSource: [],
       tableData: [],
       curRow: {},
@@ -113,6 +116,7 @@ export default {
         edit_mock_data: '',
         add_mock_data: '',
         delete_mock_data: '',
+        copy_mock_data: '',
       },
     };
   },
@@ -149,7 +153,7 @@ export default {
       InteractObjManager.on('receive', this.onReceive);
       InteractObjManager.sendObjMsg({ type: 'loaded' });
       this.$nextTick(() => {
-        this.getDataSource(true);
+        this.onSearchSubmit(initSearchForm);
       });
     },
     onReceive(message = '') {
@@ -247,6 +251,16 @@ export default {
 
           break;
         }
+        case 'copy_mock_data': {
+          if (data) {
+            this.$message.success('复制接口数据成功');
+            this.getDataSource(true);
+          } else {
+            this.$message.error('复制接口数据失败');
+          }
+
+          break;
+        }
         default:
       }
 
@@ -264,7 +278,7 @@ export default {
 
       this.sendRequestMessage({
         name: 'get_mock_data',
-        params,
+        data: { params },
         extra: { refresh },
       });
     },
@@ -417,6 +431,18 @@ export default {
       const params = { id };
       this.sendRequestMessage({
         name: 'delete_mock_data',
+        data: { params },
+      });
+    },
+    onCopy(record = {}) {
+      const params = {
+        ...record,
+        id: '',
+        type: 'USER',
+      };
+
+      this.sendRequestMessage({
+        name: 'copy_mock_data',
         data: { params },
       });
     },

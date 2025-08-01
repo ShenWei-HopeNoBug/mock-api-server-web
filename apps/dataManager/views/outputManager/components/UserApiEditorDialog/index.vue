@@ -23,7 +23,6 @@
                 ref="paramsRef"
                 v-model="scope.form[scope.inputKey]"
                 :copy="true"
-                :code-editor-bind-attrs="previewCodeEditorProps"
               />
             </template>
             <template v-else-if="scope.inputKey === 'response'">
@@ -106,7 +105,7 @@ export default {
       }
 
       const { height } = entry.target.getBoundingClientRect();
-      const offset = 42;
+      const offset = 60;
       const minHeight = 100;
       const previewHeight = Math.max(minHeight, height - offset);
       this.previewHeight = `${previewHeight}px`;
