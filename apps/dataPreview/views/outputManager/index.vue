@@ -15,7 +15,7 @@
         ref="table"
         row-key="id"
         :data="paginationTableData"
-        highlight-current-row
+        :highlight-current-row="true"
         :height="tableHeight"
         :stripe="true"
       >
@@ -64,7 +64,7 @@ import SearchForm from 'src/components/form/SearchForm/index.vue';
 import UserApiEditorDialog from './components/UserApiEditorDialog/index.vue';
 import DetailDialog from './components/DetailDialog/index.vue';
 import UploadModel from 'src/components/UploadModel/index.vue';
-import { searchFormColumns, tableColumns, filterMethod } from './config';
+import { searchFormColumns, tableColumns } from './config';
 
 export default {
   name: 'outputManager',

@@ -2,24 +2,29 @@
   <div v-loading="pageLoading" class="output-manager">
     <el-card class="header">
       <div class="search-bar">
-        <SearchForm :show-columns="searchFormColumns" @onSearch="onSearch" />
+        <SearchForm :show-columns="searchFormColumns" @onSearch="onSearchSubmit" />
       </div>
       <div class="tool-bar">
         <div class="btn-group">
           <el-button type="primary" size="small" @click="onAdd">新增 Mock 接口</el-button>
-          <el-button type="primary" size="small" @click="onClearFilter">清除所有过滤器</el-button>
         </div>
       </div>
     </el-card>
     <el-card v-dom-resize="onResize" class="content">
       <el-table
         ref="table"
+        row-key="id"
         v-loading="tableLoading"
-        :data="tableData"
-        :height="tableHeight"
+        :data="paginationTableData"
         :highlight-current-row="true"
+        :height="tableHeight"
+        :stripe="true"
       >
-        <el-table-column type="index" width="50" />
+        <el-table-column type="index" width="50">
+          <template slot-scope="scope">
+            {{ getRowIndex(scope.$index) }}
+          </template>
+        </el-table-column>
         <el-table-column
           v-for="(item, i) in tableColumns"
           :key="`column-${i}`"
@@ -48,6 +53,14 @@
           </template>
         </el-table-column>
       </el-table>
+      <div class="pagination">
+        <el-pagination
+          :total="total"
+          v-bind="pagination"
+          @size-change="onSizeChange"
+          @current-change="onPageChange"
+        />
+      </div>
     </el-card>
     <UserApiEditorDialog
       ref="userApiEditorDialog"
@@ -66,7 +79,7 @@ import SearchForm from 'src/components/form/SearchForm/index.vue';
 import UserApiEditorDialog from './components/UserApiEditorDialog/index.vue';
 import DetailDialog from './components/DetailDialog/index.vue';
 import UploadModel from 'src/components/UploadModel/index.vue';
-import { searchFormColumns, tableColumns, filterMethod } from './config';
+import { searchFormColumns, tableColumns } from './config';
 import InteractObjManager from 'src/assets/js/InteractObjManager';
 import { isJsonString, generateUUID } from 'src/assets/js/utils';
 
@@ -75,12 +88,20 @@ export default {
   components: { SearchForm, UserApiEditorDialog, DetailDialog, UploadModel },
   data() {
     return {
+      tableColumns,
       searchFormColumns,
       searchForm: {},
       dataSource: [],
       tableData: [],
       curRow: {},
       tableHeight: '550px',
+      total: 0,
+      pagination: {
+        currentPage: 1,
+        pageSize: 20,
+        pageSizes: [10, 20, 50, 100],
+        layout: 'total, sizes, prev, pager, next, jumper',
+      },
       actionIdMap: {
         get_mock_data: '',
         fix_mock_data: '',
@@ -91,6 +112,15 @@ export default {
     };
   },
   computed: {
+    paginationTableData() {
+      if (!this.total) {
+        return [];
+      }
+      const { currentPage, pageSize } = this.pagination;
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = (currentPage) * pageSize;
+      return this.tableData.slice(startIndex, endIndex);
+    },
     pageLoading() {
       return Boolean(this.actionIdMap?.fix_mock_data);
     },
@@ -101,41 +131,6 @@ export default {
     editLoading() {
       const { edit_mock_data = '', add_mock_data = '' } = this.actionIdMap || {};
       return Boolean(edit_mock_data || add_mock_data);
-    },
-    urlFilters() {
-      const urlSet = new Set();
-      const httpReg = new RegExp('^https?:');
-      const queryReg = new RegExp('\\?.*$');
-
-      this.tableData.forEach(item => {
-        const { url = '' } = item;
-
-        let saveUrl = url.replace(queryReg, '');
-        saveUrl = saveUrl.replace(httpReg, '');
-
-        if (saveUrl && !urlSet.has(saveUrl)) {
-          urlSet.add(saveUrl);
-        }
-      });
-
-      return [...urlSet].map(url => ({ text: url, value: url }));
-    },
-    tableColumns() {
-      const columns = cloneDeep(tableColumns);
-      return columns.map(item => {
-        if (item.key === 'url') {
-          return {
-            ...item,
-            props: {
-              ...item.props,
-              filters: this.urlFilters,
-              'filter-method': filterMethod,
-            },
-          };
-        }
-
-        return item;
-      });
     },
   },
   beforeDestroy() {
@@ -149,7 +144,7 @@ export default {
       InteractObjManager.on('receive', this.onReceive);
       InteractObjManager.sendObjMsg({ type: 'loaded' });
       this.$nextTick(() => {
-        this.getDataSource();
+        this.getDataSource(true);
       });
     },
     onReceive(message = '') {
@@ -165,7 +160,7 @@ export default {
         return;
       }
 
-      const { data = {}, name = '' } = options;
+      const { data = {}, name = '', extra = {} } = options;
       if (!name) {
         return;
       }
@@ -178,11 +173,12 @@ export default {
         type: 'request',
         name,
         action_id,
+        extra,
       });
     },
     // 处理请求类型的事件
     onRequestEvent(eventData = {}) {
-      const { type = '', name = '', data = {}, action_id = '' } = eventData;
+      const { type = '', name = '', data = {}, action_id = '', extra = {} } = eventData;
       if (type !== 'request') {
         return;
       }
@@ -195,7 +191,12 @@ export default {
         case 'get_mock_data': {
           const { list = [] } = data;
           this.dataSource = Array.isArray(list) ? list : [];
-          this.onSearch(this.searchForm);
+          const { refresh = true } = extra;
+          // 判断是否需要刷新页码
+          if (refresh) {
+            this.pagination.currentPage = 1;
+          }
+          this.onSearch();
           break;
         }
         case 'fix_mock_data': {
@@ -206,13 +207,13 @@ export default {
           }
 
           // 刷新数据源
-          this.getDataSource();
+          this.getDataSource(true);
           break;
         }
         case 'edit_mock_data': {
           if (data) {
             this.$message.success('更新接口数据成功');
-            this.getDataSource();
+            this.getDataSource(false);
             this.$refs.userApiEditorDialog?.close?.();
           } else {
             this.$message.error('更新接口数据失败');
@@ -223,7 +224,7 @@ export default {
         case 'add_mock_data': {
           if (data) {
             this.$message.success('新增接口数据成功');
-            this.getDataSource();
+            this.getDataSource(true);
             this.$refs.userApiEditorDialog?.close?.();
           } else {
             this.$message.error('新增接口数据失败');
@@ -234,7 +235,7 @@ export default {
         case 'delete_mock_data': {
           if (data) {
             this.$message.success('删除接口数据成功');
-            this.getDataSource();
+            this.getDataSource(true);
           } else {
             this.$message.error('删除接口数据失败');
           }
@@ -250,7 +251,7 @@ export default {
       }
     },
     // 获取数据源
-    getDataSource() {
+    getDataSource(refresh = true) {
       // webChannel 未注册成功，跳过
       if (!InteractObjManager.isRegistered()) {
         return;
@@ -258,15 +259,35 @@ export default {
 
       this.sendRequestMessage({
         name: 'get_mock_data',
+        extra: {
+          refresh,
+        },
       });
     },
-    onSearch(searchForm = {}) {
+    getRowIndex(index) {
+      const { currentPage, pageSize } = this.pagination;
+      const startIndex = (currentPage - 1) * pageSize;
+      return startIndex + index + 1;
+    },
+    onSizeChange(pageSize) {
+      this.pagination.pageSize = pageSize;
+      this.onSearch();
+    },
+    onPageChange(page) {
+      this.pagination.currentPage = page;
+      this.onSearch();
+    },
+    onSearchSubmit(searchForm = {}) {
       this.searchForm = cloneDeep(searchForm);
+      this.pagination.currentPage = 1;
+      this.onSearch();
+    },
+    onSearch() {
       const keyList = searchFormColumns.map(item => item.key);
       const matchList = [];
       // 模糊匹配配置
       keyList.forEach(key => {
-        const value = searchForm[key];
+        const value = this.searchForm[key];
         if (!value) {
           return;
         }
@@ -290,10 +311,7 @@ export default {
       };
 
       this.tableData = this.dataSource.filter(item => isMatch(item));
-      this.onClearFilter();
-    },
-    onClearFilter() {
-      this.$refs.table?.clearFilter?.();
+      this.total = this.tableData.length;
     },
     onDetail(record = {}) {
       this.curRow = cloneDeep(record);
@@ -308,7 +326,7 @@ export default {
       }
 
       const { height } = entry.target.getBoundingClientRect();
-      const offset = 40;
+      const offset = 80;
       const minHeight = 200;
       const tableHeight = Math.max(minHeight, height - offset);
       this.tableHeight = `${tableHeight}px`;
@@ -426,9 +444,20 @@ export default {
     width: 100%;
     height: 100%;
 
+    /deep/ .el-card__body {
+      padding: 14px 20px 0;
+    }
+
     .operation {
       display: flex;
       gap: 6px;
+    }
+
+    .pagination {
+      height: 60px;
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
     }
   }
 
