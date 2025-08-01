@@ -2,7 +2,6 @@
   <el-dialog
     title="抓包接口数据详情"
     :visible.sync="visible"
-    top="5vh"
     :destroy-on-close="true"
     :center="true"
     :append-to-body="true"
@@ -64,7 +63,7 @@ export default {
 <style scoped lang="less">
 .scroll {
   width: 100%;
-  height: calc(100vh - 214px);
+  height: calc(100vh - 160px);
   overflow: hidden;
   overflow-y: auto;
 }
@@ -102,7 +101,7 @@ export default {
 
 <style lang="less">
 .__mitmproxy-preview_dialog__ {
-  margin-top: 0;
-  width: calc(100vw - 100px) !important;
+  margin: 24px auto 0 !important;
+  width: calc(100vw - 48px) !important;
 }
 </style>

@@ -1,19 +1,19 @@
 <template>
-  <span class="jsonInput">
+  <div class="jsonInput">
     <div class="header">
       <el-button
         v-bind="getBindAttrs('formatCodeButton', formatCodeButtonOptions.bindAttrs)"
         @click="formatCode"
       >
-      {{ getButtonText(formatCodeButtonOptions, '格式化') }}
-    </el-button>
-    <el-button
-      v-if="copy"
-      v-bind="getBindAttrs('copyButtonOptions', copyButtonOptions.bindAttrs)"
-      @click="onCopy"
-    >
-      {{ getButtonText(copyButtonOptions, '复制') }}
-    </el-button>
+        {{ getButtonText(formatCodeButtonOptions, '格式化') }}
+      </el-button>
+      <el-button
+        v-if="copy"
+        v-bind="getBindAttrs('copyButtonOptions', copyButtonOptions.bindAttrs)"
+        @click="onCopy"
+      >
+        {{ getButtonText(copyButtonOptions, '复制') }}
+      </el-button>
     </div>
     <div class="codeEditorContainer" :style="codeEditorContainerStyle">
       <b-code-editor
@@ -23,7 +23,7 @@
         @on-change="onChange"
       />
     </div>
-  </span>
+  </div>
 </template>
 
 <script>

@@ -84,8 +84,6 @@ const tableColumns = [
     key: 'type',
     props: {
       width: 120,
-      filters: typeFilters,
-      'filter-method': filterMethod,
     },
   },
   {
@@ -97,8 +95,6 @@ const tableColumns = [
     key: 'method',
     props: {
       width: 100,
-      filters: methodFilters,
-      'filter-method': filterMethod,
     },
   },
   {

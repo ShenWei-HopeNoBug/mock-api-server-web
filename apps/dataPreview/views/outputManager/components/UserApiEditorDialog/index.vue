@@ -2,14 +2,13 @@
   <el-dialog
     title="用户接口编辑器"
     :visible.sync="visible"
-    top="5vh"
     :destroy-on-close="true"
     :center="true"
     :append-to-body="true"
     custom-class="__user-api_editor_dialog__"
     @close="close"
   >
-    <div v-if="visible" class="content">
+    <div v-if="visible" class="content" v-dom-resize="onContentResize">
       <div class="left">
         <div class="scroll">
           <BaseForm
@@ -24,7 +23,10 @@
                 <JsonInput v-model="scope.form[scope.inputKey]" />
               </template>
               <template v-else-if="scope.inputKey === 'response'">
-                <JsonInput v-model="scope.form[scope.inputKey]" />
+                <JsonInput
+                  v-model="scope.form[scope.inputKey]"
+                  :code-editor-bind-attrs="responseCodeEditorProps"
+                />
               </template>
             </template>
           </BaseForm>
@@ -34,7 +36,7 @@
         <div class="header">
           <el-button type="primary" size="small" @click="onOutput">转换</el-button>
         </div>
-        <div class="preview" v-dom-resize="onResize">
+        <div class="preview">
           <JsonInput
             ref="previewEditor"
             :input-value="dataJson"
@@ -67,10 +69,16 @@ export default {
       formConfig,
       visible: false,
       dataJson: '{}',
+      responseHeight: '300px',
       previewHeight: '300px',
     };
   },
   computed: {
+    responseCodeEditorProps() {
+      return {
+        height: this.responseHeight,
+      };
+    },
     previewCodeEditorProps() {
       return {
         readonly: true,
@@ -82,16 +90,22 @@ export default {
     initStates() {
       this.dataJson = '{}';
       this.previewHeight = '300px';
+      this.responseHeight = '300px';
     },
-    onResize(entry) {
+    onContentResize(entry) {
       if (!entry?.target) {
         return;
       }
 
       const { height } = entry.target.getBoundingClientRect();
-      const offset = 42;
+      const responseOffset = 80;
       const minHeight = 100;
-      const previewHeight = Math.max(minHeight, height - offset);
+
+      const responseHeight = Math.max(minHeight, height - responseOffset);
+      this.responseHeight = `${responseHeight}px`;
+
+      const previewOffset = 116;
+      const previewHeight = Math.max(minHeight, height - previewOffset);
       this.previewHeight = `${previewHeight}px`;
     },
     show() {
@@ -119,7 +133,7 @@ export default {
 <style scoped lang="less">
 .content {
   width: 100%;
-  height: calc(100vh - 214px);
+  height: calc(100vh - 160px);
   padding-right: 8px;
   scrollbar-gutter: stable;
   word-break: break-word;
@@ -155,6 +169,7 @@ export default {
       width: 100%;
       height: 100%;
       flex: 1;
+      overflow: hidden;
     }
   }
 }
@@ -174,7 +189,7 @@ export default {
 
 <style lang="less">
 .__user-api_editor_dialog__ {
-  margin-top: 0;
-  width: calc(100vw - 100px) !important;
+  margin: 24px auto 0 !important;
+  width: calc(100vw - 48px) !important;
 }
 </style>

@@ -1,5 +1,10 @@
 const columns = [
   {
+    label: 'ID',
+    key: 'id',
+    type: 'text',
+  },
+  {
     label: 'Url',
     key: 'url',
     type: 'text',

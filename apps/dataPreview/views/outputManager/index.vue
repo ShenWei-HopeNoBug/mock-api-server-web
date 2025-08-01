@@ -2,18 +2,28 @@
   <div class="output-manager">
     <el-card class="header">
       <div class="search-bar">
-        <SearchForm :show-columns="searchFormColumns" @onSearch="onSearch" />
+        <SearchForm :show-columns="searchFormColumns" @onSearch="onSearchSubmit" />
       </div>
       <div class="tool-bar">
         <div class="btn-group">
           <el-button type="primary" size="small" @click="onEditUserApi">用户接口编辑器</el-button>
-          <el-button type="primary" size="small" @click="onClearFilter">清除所有过滤器</el-button>
         </div>
       </div>
     </el-card>
     <el-card v-dom-resize="onResize" class="content">
-      <el-table ref="table" :data="tableData" highlight-current-row :height="tableHeight">
-        <el-table-column type="index" width="50" />
+      <el-table
+        ref="table"
+        row-key="id"
+        :data="paginationTableData"
+        highlight-current-row
+        :height="tableHeight"
+        :stripe="true"
+      >
+        <el-table-column type="index" width="50">
+          <template slot-scope="scope">
+            {{ getRowIndex(scope.$index) }}
+          </template>
+        </el-table-column>
         <el-table-column
           v-for="(item, i) in tableColumns"
           :key="`column-${i}`"
@@ -34,6 +44,14 @@
           </template>
         </el-table-column>
       </el-table>
+      <div class="pagination">
+        <el-pagination
+          :total="total"
+          v-bind="pagination"
+          @size-change="onSizeChange"
+          @current-change="onPageChange"
+        />
+      </div>
     </el-card>
     <UserApiEditorDialog ref="userApiEditorDialog" />
     <DetailDialog ref="detailDialog" :data-source="curRow" @close="onDialogClose" />
@@ -53,62 +71,63 @@ export default {
   components: { SearchForm, UserApiEditorDialog, DetailDialog, UploadModel },
   data() {
     return {
+      tableColumns,
       searchFormColumns,
+      searchForm: {},
       dataSource: [],
       tableData: [],
       curRow: {},
       tableHeight: '550px',
+      total: 0,
+      pagination: {
+        currentPage: 1,
+        pageSize: 50,
+        pageSizes: [10, 20, 50, 100],
+        layout: 'total, sizes, prev, pager, next, jumper',
+      },
     };
   },
   computed: {
-    urlFilters() {
-      const urlSet = new Set();
-      const httpReg = new RegExp('^https?:');
-      const queryReg = new RegExp('\\?.*$');
-
-      this.tableData.forEach(item => {
-        const { url = '' } = item;
-
-        let saveUrl = url.replace(queryReg, '');
-        saveUrl = saveUrl.replace(httpReg, '');
-
-        if (saveUrl && !urlSet.has(saveUrl)) {
-          urlSet.add(saveUrl);
-        }
-      });
-
-      return [...urlSet].map(url => ({ text: url, value: url }));
-    },
-    tableColumns() {
-      const columns = cloneDeep(tableColumns);
-      return columns.map(item => {
-        if (item.key === 'url') {
-          return {
-            ...item,
-            props: {
-              ...item.props,
-              filters: this.urlFilters,
-              'filter-method': filterMethod,
-            },
-          };
-        }
-
-        return item;
-      });
-
+    paginationTableData() {
+      if (!this.total) {
+        return [];
+      }
+      const { currentPage, pageSize } = this.pagination;
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = (currentPage) * pageSize;
+      return this.tableData.slice(startIndex, endIndex);
     },
   },
   created() {
     this.dataSource = Array.isArray(window.MITMPROXY_OUTPUT) ? window.MITMPROXY_OUTPUT : [];
     this.tableData = this.dataSource;
+    this.total = this.tableData.length;
   },
   methods: {
-    onSearch(searchForm = {}) {
+    getRowIndex(index) {
+      const { currentPage, pageSize } = this.pagination;
+      const startIndex = (currentPage - 1) * pageSize;
+      return startIndex + index + 1;
+    },
+    onSizeChange(pageSize) {
+      this.pagination.pageSize = pageSize;
+      this.onSearch();
+    },
+    onPageChange(page) {
+      this.pagination.currentPage = page;
+      this.onSearch();
+    },
+    onSearchSubmit(searchForm = {}) {
+      this.searchForm = cloneDeep(searchForm);
+      this.pagination.currentPage = 1;
+      this.onSearch();
+    },
+    onSearch() {
       const keyList = searchFormColumns.map(item => item.key);
       const matchList = [];
       // 模糊匹配配置
       keyList.forEach(key => {
-        const value = searchForm[key];
+        const value = this.searchForm[key];
         if (!value) {
           return;
         }
@@ -132,13 +151,10 @@ export default {
       };
 
       this.tableData = this.dataSource.filter(item => isMatch(item));
-      this.onClearFilter();
+      this.total = this.tableData.length;
     },
     onEditUserApi() {
       this.$refs.userApiEditorDialog?.show?.();
-    },
-    onClearFilter() {
-      this.$refs.table?.clearFilter?.();
     },
     onDetail(record = {}) {
       this.curRow = cloneDeep(record);
@@ -153,7 +169,7 @@ export default {
       }
 
       const { height } = entry.target.getBoundingClientRect();
-      const offset = 40;
+      const offset = 80;
       const minHeight = 200;
       const tableHeight = Math.max(minHeight, height - offset);
       this.tableHeight = `${tableHeight}px`;
@@ -193,6 +209,17 @@ export default {
     flex: 1;
     width: 100%;
     height: 100%;
+
+    /deep/ .el-card__body {
+      padding: 14px 20px 0;
+    }
+
+    .pagination {
+      height: 60px;
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+    }
   }
 
   .params {
