@@ -33,6 +33,7 @@ export default defineConfig({
         `${APPS}/dataPreview/index.html`,
         `${APPS}/document/index.html`,
         `${APPS}/dataManager/index.html`,
+        `${APPS}/configEdit/index.html`,
       ],
       output: {
         dir: 'web',

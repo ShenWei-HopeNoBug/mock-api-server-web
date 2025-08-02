@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "mock-api-server-web",
   "scripts": {
-    "start": "vite --open ./apps/dataManager/index.html",
+    "start": "vite --open ./apps/configEdit/index.html",
     "build": "vite build",
     "preview": "vite preview"
   },
