@@ -254,7 +254,10 @@ export default {
         case 'copy_mock_data': {
           if (data) {
             this.$message.success('复制接口数据成功');
-            this.getDataSource(true);
+            const { refresh = true } = extra;
+            if (refresh) {
+              this.getDataSource(refresh);
+            }
           } else {
             this.$message.error('复制接口数据失败');
           }
@@ -435,6 +438,10 @@ export default {
       });
     },
     onCopy(record = {}) {
+      const { type } = this.searchForm;
+      // 是否需要刷新页码
+      const refresh = type !== 'MITMPROXY';
+
       const params = {
         ...record,
         id: '',
@@ -444,6 +451,7 @@ export default {
       this.sendRequestMessage({
         name: 'copy_mock_data',
         data: { params },
+        extra: { refresh }
       });
     },
   },
