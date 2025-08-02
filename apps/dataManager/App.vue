@@ -5,11 +5,24 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex';
 import outputManager from './views/outputManager/index.vue';
 
 export default {
   name: 'App',
   components: { outputManager },
+  computed: {
+    ...mapState('bridge', ['bridge']),
+  },
+  created() {
+    this.bridge.init().then((result) => {
+      const { register = false } = result;
+      this.setRegister(register);
+    });
+  },
+  methods: {
+    ...mapMutations('bridge', ['setRegister']),
+  },
 };
 </script>
 

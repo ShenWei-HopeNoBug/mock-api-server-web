@@ -81,13 +81,13 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import { cloneDeep } from 'lodash';
 import SearchForm from 'src/components/form/SearchForm/index.vue';
 import UserApiEditorDialog from './components/UserApiEditorDialog/index.vue';
 import DetailDialog from './components/DetailDialog/index.vue';
 import UploadModel from 'src/components/UploadModel/index.vue';
 import { initSearchForm, searchFormColumns, tableColumns } from './config';
-import InteractObjManager from 'src/assets/js/InteractObjManager';
 import { isJsonString, generateUUID } from 'src/assets/js/utils';
 
 export default {
@@ -121,6 +121,7 @@ export default {
     };
   },
   computed: {
+    ...mapState('bridge', ['bridge', 'register']),
     paginationTableData() {
       if (!this.total) {
         return [];
@@ -142,16 +143,23 @@ export default {
       return Boolean(edit_mock_data || add_mock_data);
     },
   },
-  beforeDestroy() {
-    InteractObjManager.off('receive', this.onReceive);
+  watch: {
+    register: {
+      handler(bool) {
+        if (bool) {
+          this.init();
+        }
+      },
+      immediate: true,
+    },
   },
-  mounted() {
-    this.init();
+  beforeDestroy() {
+    this.bridge.off('receive', this.onReceive);
   },
   methods: {
     init() {
-      InteractObjManager.on('receive', this.onReceive);
-      InteractObjManager.sendObjMsg({ type: 'loaded' });
+      this.bridge.on('receive', this.onReceive);
+      this.bridge.sendObjMsg({ type: 'loaded' });
       this.$nextTick(() => {
         this.onSearchSubmit(initSearchForm);
       });
@@ -165,7 +173,7 @@ export default {
     },
     sendRequestMessage(options = {}) {
       // webChannel 未注册成功，跳过
-      if (!InteractObjManager.isRegistered()) {
+      if (!this.register) {
         return;
       }
 
@@ -176,7 +184,7 @@ export default {
 
       const action_id = generateUUID();
       this.actionIdMap[name] = action_id;
-      InteractObjManager.sendObjMsg({
+      this.bridge.sendObjMsg({
         params: {},
         ...data,
         type: 'request',
@@ -275,7 +283,7 @@ export default {
     // 获取数据源
     getDataSource(refresh = true, params = {}) {
       // webChannel 未注册成功，跳过
-      if (!InteractObjManager.isRegistered()) {
+      if (!this.register) {
         return;
       }
 
@@ -451,7 +459,7 @@ export default {
       this.sendRequestMessage({
         name: 'copy_mock_data',
         data: { params },
-        extra: { refresh }
+        extra: { refresh },
       });
     },
   },

@@ -1,67 +1,67 @@
 import getWebChannelInteractObj from 'src/assets/js/getWebChannelInteractObj';
 import { Message } from 'element-ui';
 import { isObject } from 'lodash';
-import { createEventBus } from 'src/assets/js/eventBus';
+import { EventBus } from 'src/assets/js/eventBus';
 
-// 通信对象
-let interactObj = null;
-// 是否注册成功
-let registered = false;
 
-const InteractObjManager = {
+class QtBridge extends EventBus {
+  constructor() {
+    super();
+    // 是否注册成功
+    this.register = false;
+    // 通信对象
+    this.bridge = null;
+  }
+
   init() {
     return new Promise(resolve => {
       getWebChannelInteractObj().then(result => {
         const { interactObj: interact, error, message: msg = '' } = result;
         // 更新是否注册标志
-        registered = !error;
+        this.register = !error;
         if (error) {
           msg && Message.error(msg);
           resolve();
           return;
         }
 
-        interactObj = interact;
-        const onReceive = this._receive.bind(InteractObjManager);
+        this.bridge = interact;
+        const onReceive = this._receive.bind(this);
         // 绑定接受消息的回调
-        interactObj.qt2js_signal?.connect(onReceive);
+        this.bridge.qt2js_signal?.connect(onReceive);
 
         // 发送 WebChannel 注册成功的消息
         this.sendObjMsg({
           type: 'register',
         });
-        resolve();
+
+        resolve({
+          register: this.register,
+        });
       });
     });
-  },
-
-  // 是否已经注册
-  isRegistered() {
-    return registered;
-  },
+  }
 
   // 发送消息给 qt 客户端
   send(message = '') {
-    if (!registered) {
+    if (!this.register) {
       return;
     }
 
-    interactObj?.send_js2qt_msg?.(message);
-  },
+    this.bridge?.send_js2qt_msg?.(message);
+  }
 
   // 发送 object 类型的数据
   sendObjMsg(data = {}) {
     const sendData = isObject(data) ? data : {};
     this.send(JSON.stringify(sendData));
-  },
+  }
 
   // 接受 qt 客户端的消息
   _receive(message) {
     this.emit('receive', message);
-  },
-};
+  }
+}
 
-// 将 InteractObjManager 原型指向 bus 继承属性和方法
-Object.setPrototypeOf(InteractObjManager, createEventBus());
 
-export default InteractObjManager;
+export default QtBridge;
