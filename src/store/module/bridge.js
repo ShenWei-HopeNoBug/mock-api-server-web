@@ -1,14 +1,12 @@
-import QtBridge from 'src/assets/js/QtBridge';
-
 export default {
   namespaced: true,
   state: {
-    bridge: new QtBridge(),
+    channelObj: null,
     register: false,
   },
   mutations: {
-    setBridge: (state, bridge) => {
-      state.bridge = bridge;
+    setChannelObj: (state, bridge) => {
+      state.channelObj = bridge;
     },
     setRegister(state, bool) {
       state.register = bool;

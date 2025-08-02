@@ -1,7 +1,10 @@
+import { isObject } from 'lodash';
+
 // 获取 webChannel 通信对象
-const getWebChannelInteractObj = () => new Promise(resolve => {
+const getQtBridgeData = () => new Promise(resolve => {
   const errorRes = {
-    interactObj: null,
+    channel: null,
+    channelObj: null,
     error: true,
     message: '',
   };
@@ -15,15 +18,15 @@ const getWebChannelInteractObj = () => new Promise(resolve => {
   }
 
   try {
-    let interactObj = null;
     // 初始化 webChannel
     new window.QWebChannel(window.qt.webChannelTransport, channel => {
-      interactObj = channel?.objects?.interactObj || null;
-      const error = !interactObj;
-      const message = error ? '获取 interactObj 对象失败' : '';
+      const error = !isObject(channel?.objects);
+      const channelObj = error ? null : channel?.objects;
+      const message = error ? '获取 channelObj 对象失败' : '';
 
       resolve({
-        interactObj,
+        channel,
+        channelObj,
         error,
         message,
       });
@@ -36,4 +39,4 @@ const getWebChannelInteractObj = () => new Promise(resolve => {
   }
 });
 
-export default getWebChannelInteractObj;
+export default getQtBridgeData;

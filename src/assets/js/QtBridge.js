@@ -1,45 +1,34 @@
-import getWebChannelInteractObj from 'src/assets/js/getWebChannelInteractObj';
-import { Message } from 'element-ui';
 import { isObject } from 'lodash';
 import { EventBus } from 'src/assets/js/eventBus';
 
 
 class QtBridge extends EventBus {
-  constructor() {
+  constructor(props = {}) {
     super();
+    const { bridge = null } = props;
+
     // 是否注册成功
     this.register = false;
     // 通信对象
     this.bridge = null;
+
+    this.init(bridge);
   }
 
-  init() {
-    return new Promise(resolve => {
-      getWebChannelInteractObj().then(result => {
-        const { interactObj: interact, error, message: msg = '' } = result;
-        // 更新是否注册标志
-        this.register = !error;
-        if (error) {
-          msg && Message.error(msg);
-          resolve();
-          return;
-        }
+  isRegister() {
+    return this.register;
+  }
 
-        this.bridge = interact;
-        const onReceive = this._receive.bind(this);
-        // 绑定接受消息的回调
-        this.bridge.qt2js_signal?.connect(onReceive);
+  init(bridge) {
+    this.register = isObject(bridge);
+    if (!this.register) {
+      return;
+    }
 
-        // 发送 WebChannel 注册成功的消息
-        this.sendObjMsg({
-          type: 'register',
-        });
-
-        resolve({
-          register: this.register,
-        });
-      });
-    });
+    this.bridge = bridge;
+    const onReceive = this._receive.bind(this);
+    // 绑定接受消息的回调
+    this.bridge.qt2js_signal?.connect?.(onReceive);
   }
 
   // 发送消息给 qt 客户端

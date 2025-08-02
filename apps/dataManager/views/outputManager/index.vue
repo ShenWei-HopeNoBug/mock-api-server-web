@@ -82,13 +82,14 @@
 
 <script>
 import { mapState } from 'vuex';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, isObject } from 'lodash';
 import SearchForm from 'src/components/form/SearchForm/index.vue';
 import UserApiEditorDialog from './components/UserApiEditorDialog/index.vue';
 import DetailDialog from './components/DetailDialog/index.vue';
 import UploadModel from 'src/components/UploadModel/index.vue';
 import { initSearchForm, searchFormColumns, tableColumns } from './config';
 import { isJsonString, generateUUID } from 'src/assets/js/utils';
+import QtBridge from 'src/assets/js/QtBridge';
 
 export default {
   name: 'outputManager',
@@ -118,10 +119,11 @@ export default {
         delete_mock_data: '',
         copy_mock_data: '',
       },
+      bridge: new QtBridge(),
     };
   },
   computed: {
-    ...mapState('bridge', ['bridge', 'register']),
+    ...mapState('bridge', ['channelObj', 'register']),
     paginationTableData() {
       if (!this.total) {
         return [];
@@ -158,6 +160,15 @@ export default {
   },
   methods: {
     init() {
+      const { dataManager = null } = this.channelObj || {};
+      if (!isObject(dataManager)) {
+        this.$message.error('dataManager 通信对象获取失败！');
+        return;
+      }
+
+      // 初始化通信对象
+      this.bridge.init(dataManager);
+
       this.bridge.on('receive', this.onReceive);
       this.bridge.sendObjMsg({ type: 'loaded' });
       this.$nextTick(() => {
@@ -173,7 +184,7 @@ export default {
     },
     sendRequestMessage(options = {}) {
       // webChannel 未注册成功，跳过
-      if (!this.register) {
+      if (!this.bridge.isRegister()) {
         return;
       }
 
@@ -283,7 +294,7 @@ export default {
     // 获取数据源
     getDataSource(refresh = true, params = {}) {
       // webChannel 未注册成功，跳过
-      if (!this.register) {
+      if (!this.bridge.isRegister()) {
         return;
       }
 

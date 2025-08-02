@@ -5,23 +5,28 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
+import { mapMutations } from 'vuex';
+import getQtBridgeData from 'src/assets/js/getQtBridgeData';
 import outputManager from './views/outputManager/index.vue';
 
 export default {
   name: 'App',
   components: { outputManager },
-  computed: {
-    ...mapState('bridge', ['bridge']),
-  },
   created() {
-    this.bridge.init().then((result) => {
-      const { register = false } = result;
+    getQtBridgeData().then(result => {
+      const { error, message: msg = '', channelObj = null } = result;
+      // 更新是否注册标志
+      const register = !error;
+      if (error) {
+        msg && this.$message.error(msg);
+      }
+
+      this.setChannelObj(channelObj);
       this.setRegister(register);
     });
   },
   methods: {
-    ...mapMutations('bridge', ['setRegister']),
+    ...mapMutations('bridge', ['setChannelObj', 'setRegister']),
   },
 };
 </script>
