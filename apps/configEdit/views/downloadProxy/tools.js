@@ -13,7 +13,21 @@ export const isDownloadProxyValid = (proxyConfig = {}) => {
   return protocolValid && proxyValid && Array.isArray(includes);
 };
 
-// 处理下载配置数据
+// 下载代理配置列表是否合法
+export const isDownloadProxyListValid = (proxyList = []) => {
+  let valid = true;
+  for (let i = 0; i < proxyList.length; i++) {
+    const config = proxyList[i];
+    if (!isDownloadProxyValid(config)) {
+      valid = false;
+      break;
+    }
+  }
+
+  return valid;
+};
+
+// 处理下载配置列表数据
 export const processDownloadProxyList = (proxyList = []) => {
   const list = [];
   proxyList.forEach(item => {

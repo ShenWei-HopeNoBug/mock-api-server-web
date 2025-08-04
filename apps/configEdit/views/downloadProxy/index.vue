@@ -2,7 +2,10 @@
   <div class="download-proxy">
     <div class="form-area">
       <div class="scroll">
-        <ProxyListInput v-model="list" />
+        <div class="row">
+          <div class="label">下载代理</div>
+          <ProxyListInput v-model="list" />
+        </div>
       </div>
     </div>
     <div class="footer">
@@ -13,7 +16,7 @@
 
 <script>
 import ProxyListInput from 'apps/configEdit/views/downloadProxy/components/ProxyListInput/index.vue';
-import { processDownloadProxyList } from 'apps/configEdit/views/downloadProxy/tools';
+import { isDownloadProxyListValid, processDownloadProxyList } from 'apps/configEdit/views/downloadProxy/tools';
 
 
 export default {
@@ -28,6 +31,12 @@ export default {
   },
   methods: {
     onSubmit() {
+      const valid = isDownloadProxyListValid(this.list);
+      if (!valid) {
+        this.$message.error('存在没填写完整的配置');
+        return;
+      }
+
       const submitProxyList = processDownloadProxyList(this.list);
       console.log('submitProxyList', submitProxyList);
     },
@@ -53,6 +62,27 @@ export default {
       width: 100%;
       scrollbar-gutter: stable;
       padding-right: 14px;
+    }
+  }
+
+  .row {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+
+    .label {
+      width: 80px;
+      font-weight: bold;
+
+      &:after {
+        content: ':';
+        padding: 0 4px 0 2px;
+      }
+    }
+
+    .input {
+      width: 100%;
+      flex: 1;
     }
   }
 

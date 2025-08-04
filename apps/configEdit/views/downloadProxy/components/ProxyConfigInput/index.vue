@@ -3,7 +3,7 @@
     <div class="inline">
       <div class="form-item">
         <div class="label">Protocol</div>
-        <el-select class="input" v-model="formData.protocol" @change="onChange">
+        <el-select class="input" v-model="formData.protocol" clearable @change="onChange">
           <el-option
             v-for="(o,j) in protocolValueEnum"
             :key="`option_${j}`"
@@ -14,7 +14,7 @@
       </div>
       <div class="form-item">
         <div class="label">Proxy</div>
-        <el-input class="input" v-model="formData.proxy" @change="onChange" />
+        <el-input class="input" v-model="formData.proxy" clearable @change="onChange" />
       </div>
     </div>
     <div class="form-item">
