@@ -119,7 +119,7 @@ export default {
 }
 
 .delete-btn {
-  color: red;
+  color: rgb(254, 108, 111);
   font-weight: bolder;
   height: 40px;
 }

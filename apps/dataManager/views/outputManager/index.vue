@@ -170,7 +170,6 @@ export default {
       this.bridge.init(dataManager);
 
       this.bridge.on('receive', this.onReceive);
-      this.bridge.sendObjMsg({ type: 'loaded' });
       this.$nextTick(() => {
         this.onSearchSubmit(initSearchForm);
       });

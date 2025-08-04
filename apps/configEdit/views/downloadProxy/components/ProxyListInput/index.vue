@@ -44,7 +44,7 @@ export default {
   computed: {
     columns() {
       return this.list.map(item => {
-        const rowStyle = isDownloadProxyValid(item) ? {} : { borderColor: 'red' };
+        const rowStyle = isDownloadProxyValid(item) ? {} : { borderColor: 'rgb(254, 108, 111)' };
         return { rowStyle };
       });
     },

@@ -81,17 +81,15 @@ export default {
     justify-content: space-between;
     gap: 14px;
     margin-bottom: 14px;
-
-    .inline-item {
-      width: 50%;
-    }
   }
 
   .form-item {
     width: 100%;
     display: flex;
+    overflow: hidden;
 
     .label {
+      padding-left: 10px;
       width: 80px;
       display: flex;
       align-items: center;
