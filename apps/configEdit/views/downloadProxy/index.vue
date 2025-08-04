@@ -137,7 +137,7 @@ export default {
     onSubmit() {
       const valid = isDownloadProxyListValid(this.list);
       if (!valid) {
-        this.$message.error('存在没填写完整的配置');
+        this.$message.error('存在非法输入或未填写项,请检查');
         return;
       }
 

@@ -64,7 +64,7 @@ export default {
   },
   methods: {
     indexFormat(index) {
-      return `#${index}`;
+      return `#${index + 1}`;
     },
     onChange() {
       this.$emit('change', this.list);

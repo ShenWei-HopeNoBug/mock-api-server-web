@@ -1,17 +1,17 @@
 const protocolValueEnum = [
   {
-    label: 'http:',
-    value: 'http:',
+    label: 'http',
+    value: 'http',
   },
   {
-    label: 'https:',
-    value: 'https:',
+    label: 'https',
+    value: 'https',
   },
 ];
 
 
 const defaultDownloadProxy = {
-  protocol: 'http:',
+  protocol: 'https',
   proxy: '',
   includes: [],
 };
