@@ -1,58 +1,67 @@
 <template>
-  <div>
-    <BaseForm
-      ref="baseForm"
-      :columns="proxyFormColumns"
-      :init-form-data="initFormData"
-      @onSubmit="onSubmit"
-    >
-      <template #inputSlot="scope">
-        <TextListInput
-          v-if="scope.inputKey === 'proxy'"
-          v-model="scope.form[scope.inputKey]"
-        />
-      </template>
-    </BaseForm>
-    <el-button @click="triggerSubmit">确定</el-button>
+  <div class="download-proxy">
+    <div class="form-area">
+      <div class="scroll">
+        <ProxyListInput v-model="list" />
+      </div>
+    </div>
+    <div class="footer">
+      <el-button type="primary" @click="onSubmit">确定</el-button>
+    </div>
   </div>
 </template>
 
 <script>
-import BaseForm from 'src/components/form/BaseForm/index.vue';
-import TextListInput from 'src/components/form/inputs/TextListInput/index.vue';
+import ProxyListInput from 'apps/configEdit/views/downloadProxy/components/ProxyListInput/index.vue';
+import { processDownloadProxyList } from 'apps/configEdit/views/downloadProxy/tools';
 
-const proxyFormColumns = [
-  {
-    slot: true,
-    inputType: '#input#',
-    label: 'proxy',
-    key: 'proxy',
-  },
-];
 
 export default {
   name: 'downloadProxy',
   components: {
-    BaseForm,
-    TextListInput,
+    ProxyListInput,
   },
   data() {
     return {
-      proxyFormColumns,
-      initFormData: {
-        // proxy: [],
-      },
+      list: [],
     };
   },
   methods: {
-    triggerSubmit() {
-      this.$refs.baseForm?.onSubmit?.();
-    },
-    onSubmit(form = {}) {
-      console.log(form);
+    onSubmit() {
+      const submitProxyList = processDownloadProxyList(this.list);
+      console.log('submitProxyList', submitProxyList);
     },
   },
 };
 </script>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+.download-proxy {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .form-area {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    overflow-y: auto;
+
+    .scroll {
+      width: 100%;
+      scrollbar-gutter: stable;
+      padding-right: 14px;
+    }
+  }
+
+  .footer {
+    margin-top: 24px;
+    width: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+  }
+}
+</style>
