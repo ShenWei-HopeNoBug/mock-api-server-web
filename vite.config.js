@@ -11,7 +11,21 @@ const ROOT = resolve(__dirname);
 const APPS = `${ROOT}/apps`;
 const SRC = `${ROOT}/src`;
 
-export default defineConfig({
+const getInput = (mode) =>
+  mode === 'production'
+    ? [
+      `${APPS}/dataPreview/index.html`,
+      `${APPS}/document/index.html`,
+      `${APPS}/configEdit/index.html`,
+    ]
+    : [
+      `${APPS}/dataPreview/index.html`,
+      `${APPS}/document/index.html`,
+      `${APPS}/dataManager/index.html`,
+      `${APPS}/configEdit/index.html`,
+    ];
+
+export default defineConfig(({ mode }) => ({
   base: './',
   server: {
     host: '0.0.0.0',
@@ -29,12 +43,7 @@ export default defineConfig({
       warnOnError: true,
     },
     rollupOptions: {
-      input: [
-        `${APPS}/dataPreview/index.html`,
-        `${APPS}/document/index.html`,
-        `${APPS}/dataManager/index.html`,
-        `${APPS}/configEdit/index.html`,
-      ],
+      input: getInput(mode),
       output: {
         dir: 'web',
         chunkFileNames: 'static/chunk/[name]-[hash].js',
@@ -70,4 +79,4 @@ export default defineConfig({
       },
     ],
   },
-});
+}));
