@@ -14,7 +14,6 @@ const SRC = `${ROOT}/src`;
 const getInput = (mode) =>
   mode === 'production'
     ? [
-      `${APPS}/dataPreview/index.html`,
       `${APPS}/document/index.html`,
       `${APPS}/configEdit/index.html`,
     ]
