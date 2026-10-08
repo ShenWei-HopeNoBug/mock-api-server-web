@@ -15,7 +15,6 @@ const getInput = (mode) =>
   mode === 'production'
     ? [
       `${APPS}/document/index.html`,
-      `${APPS}/configEdit/index.html`,
     ]
     : [
       `${APPS}/dataPreview/index.html`,
